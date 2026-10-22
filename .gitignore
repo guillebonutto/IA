@@ -1,0 +1,32 @@
+# Modelos pesados (GGUF > 100MB)
+models/*
+!models/README.md
+*.gguf
+*.part
+
+# Configuración con credenciales y API Keys privadas
+config.json
+
+# Base de datos local y memoria
+memory.db
+*.db
+*.sqlite
+
+# Logs y registros
+*.log
+models/download_progress.json
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Carpeta de scratchpad y capturas de prueba
+scratch/
+
+# Entornos virtuales y editores
+.env
+venv/
+.venv/
+.vscode/
+.idea/

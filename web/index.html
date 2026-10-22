@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA Core | Asistente de IA Local Ultra-Optimizado</title>
+    <meta name="description" content="IA local agéntica de alta eficiencia impulsada por llama.cpp y modelos Qwen 2.5 Coder.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar lateral -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <span class="pulse-ring"></span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>AURA <span>CORE</span></h1>
+                    <span class="badge-zero">ZERO-BLOAT</span>
+                </div>
+            </div>
+
+            <button id="btn-new-chat" class="btn-primary-action">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nueva Conversación
+            </button>
+
+            <!-- Telemetría en tiempo real del Hardware -->
+            <div class="sidebar-section">
+                <div class="section-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                    TELEMETRÍA LOCAL
+                </div>
+                <div class="telemetry-card">
+                    <div class="stat-row">
+                        <span class="stat-label">Motor</span>
+                        <span id="badge-engine" class="stat-val status-pill online">Conectando...</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Modelo</span>
+                        <span id="val-model" class="stat-val text-truncate">Meta Llama 3.1 8B Instruct (Local)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">CPU</span>
+                        <span id="val-cpu" class="stat-val">Ryzen 5 2400G</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">RAM Total</span>
+                        <span id="val-ram" class="stat-val accent-cyan">32.0 GB DDR4</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Espacio Libre C:</span>
+                        <span id="val-disk" class="stat-val accent-green">-- GB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cerebro Dual & Destilación Continua -->
+            <div class="sidebar-section">
+                <div class="section-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    CEREBRO DUAL & DESTILACIÓN
+                </div>
+                <div class="debate-status-card">
+                    <div class="provider-row">
+                        <div class="provider-info">
+                            <span class="provider-name">Groq Llama 3.3 70B</span>
+                            <span class="provider-role">Arquitecto • ~300 t/s</span>
+                        </div>
+                        <span id="badge-groq" class="status-pill offline">Sin Clave</span>
+                    </div>
+                    <div class="provider-row">
+                        <div class="provider-info">
+                            <span class="provider-name">Google Gemini 1.5 Flash</span>
+                            <span class="provider-role">Auditor • Casos Borde</span>
+                        </div>
+                        <span id="badge-gemini" class="status-pill offline">Sin Clave</span>
+                    </div>
+                    <div class="distill-meter">
+                        <div class="distill-header">
+                            <span class="distill-label">Dataset Destilado</span>
+                            <span id="val-distill-count" class="distill-count accent-cyan">0 pares</span>
+                        </div>
+                        <div class="distill-desc">Cada debate exitoso nutre el dataset local para entrenar tu modelo Qwen 7B.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Capacidades Agénticas -->
+            <div class="sidebar-section">
+                <div class="section-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                    HERRAMIENTAS ACTIVAS
+                </div>
+                <div class="tools-list" id="tools-container">
+                    <div class="tool-tag"><span class="tool-dot"></span>PowerShell Terminal</div>
+                    <div class="tool-tag"><span class="tool-dot"></span>Lectura / Escritura Archivos</div>
+                    <div class="tool-tag"><span class="tool-dot"></span>Explorador de Disco</div>
+                    <div class="tool-tag"><span class="tool-dot"></span>Memoria FTS5 / RAG</div>
+                    <div class="tool-tag"><span class="tool-dot"></span>Telemetría de Sistema</div>
+                </div>
+            </div>
+
+            <!-- Sección de indexación RAG -->
+            <div class="sidebar-section memory-box">
+                <div class="section-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    APRENDIZAJE / RAG
+                </div>
+                <button id="btn-add-doc" class="btn-subtle">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Indexar Documento o Código
+                </button>
+            </div>
+        </aside>
+
+        <!-- Zona Principal de Conversación -->
+        <main class="chat-viewport">
+            <!-- Barra Superior -->
+            <header class="top-nav">
+                <div class="active-agent-info">
+                    <span class="status-indicator" id="nav-status-indicator"></span>
+                    <div>
+                        <h2 id="nav-mode-title">⚡ Asistente Local Offline</h2>
+                        <p class="subtitle" id="nav-mode-subtitle">Inferencia 100% privada en tu PC con llama.cpp (AVX2/Vulkan)</p>
+                    </div>
+                </div>
+
+                <!-- Selector de Modo de Ejecución -->
+                <div class="mode-selector-dock">
+                    <button class="mode-btn" id="btn-mode-debate" data-mode="debate" title="Debate adversarial Groq 70B vs Gemini + Destilación">
+                        <span class="mode-icon">⚔️</span>
+                        <span>Debate Dual</span>
+                        <span class="mode-badge-pulse">70B</span>
+                    </button>
+                    <button class="mode-btn active" id="btn-mode-local" data-mode="local" title="Inferencia 100% offline en tu PC con llama.cpp">
+                        <span class="mode-icon">⚡</span>
+                        <span>Local Offline</span>
+                    </button>
+                    <button class="mode-btn" id="btn-mode-auto" data-mode="auto" title="Selección inteligente según complejidad y disponibilidad">
+                        <span class="mode-icon">🔄</span>
+                        <span>Auto</span>
+                    </button>
+                </div>
+
+                <div class="header-actions">
+                    <button id="btn-open-keys" class="btn-config-keys" title="Configurar claves de Groq y Gemini">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>Claves Cloud</span>
+                    </button>
+                    <button id="btn-reset-chat" class="btn-icon" title="Limpiar historial de chat">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <polyline points="23 20 23 14 17 14"></polyline>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Contenedor de Mensajes -->
+            <div id="messages-stream" class="messages-container">
+                <!-- Hero de Bienvenida inicial -->
+                <div id="welcome-hero" class="welcome-hero">
+                    <div class="hero-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <h3>¿En qué trabajamos hoy en tu PC?</h3>
+                    <p>IA local autónoma optimizada para tu AMD Ryzen y 32 GB de RAM. Sin telemetría externa, sin cuotas ni límites.</p>
+                    
+                    <div class="prompt-suggestions">
+                        <button class="suggestion-chip" data-prompt="Revisa los archivos del directorio actual y hazme un resumen estructurado.">
+                            📁 Analizar archivos del proyecto actual
+                        </button>
+                        <button class="suggestion-chip" data-prompt="Crea un script en Python que verifique periódicamente el espacio en disco y envíe una alerta si baja de 5 GB.">
+                            ⚡ Generar script de monitoreo en Python
+                        </button>
+                        <button class="suggestion-chip" data-prompt="Ejecuta un diagnóstico rápido del sistema con get_system_stats y dime cómo está el rendimiento.">
+                            📊 Ver estado y salud del hardware
+                        </button>
+                        <button class="suggestion-chip" data-prompt="Explícame cómo podemos optimizar este código o proyecto para consumir el mínimo de memoria posible.">
+                            🚀 Consultar arquitectura de alta eficiencia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de entrada flotante -->
+            <footer class="input-dock">
+                <form id="chat-form" class="chat-form">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="user-prompt" 
+                            rows="1" 
+                            placeholder="Escribe una instrucción o tarea para ejecutar en tu PC... (Shift+Enter para salto de línea)"
+                            autofocus
+                        ></textarea>
+                        <button type="submit" id="btn-submit" class="btn-send" title="Enviar instrucción">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <div class="footer-caption">
+                    <span>100% Local</span> • <span>Inferencia Directa AVX2 / Vulkan</span> • <span>Sin llamadas a la nube</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal para Indexar Documentos / RAG -->
+    <div id="modal-rag" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Indexar Información en Memoria Local</h3>
+                <button id="btn-close-modal" class="btn-icon">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>La información indexada se almacenará en la base de datos SQLite FTS5 local para que el agente la recuerde instantáneamente.</p>
+                <div class="form-group">
+                    <label for="rag-title">Título o Referencia</label>
+                    <input type="text" id="rag-title" placeholder="ej. Documentación de mi base de datos, API Keys, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="rag-content">Contenido o Código</label>
+                    <textarea id="rag-content" rows="6" placeholder="Pega aquí el texto, apuntes, snippets o documentación..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cancel-rag" class="btn-secondary">Cancelar</button>
+                <button id="btn-save-rag" class="btn-primary">Guardar en Memoria</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar Claves Cloud (Groq & Gemini) -->
+    <div id="modal-keys" class="modal-overlay hidden">
+        <div class="modal-card modal-card-large">
+            <div class="modal-header">
+                <div class="modal-title-with-badge">
+                    <h3>⚔️ Configurar Cerebro Dual (Groq & Gemini)</h3>
+                    <span class="badge-free">100% GRATUITO</span>
+                </div>
+                <button id="btn-close-keys-modal" class="btn-icon">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-intro">
+                    Enlaza <strong>Groq (Llama 3.3 70B)</strong> y <strong>Google Gemini (1.5 Flash)</strong> para que debatan de forma adversarial. Uno propone la arquitectura y el otro audita fallos y casos borde hasta sintetizar la solución óptima. Ambos proveedores ofrecen <strong>cuotas gratuitas generosas sin tarjeta de crédito</strong>.
+                </p>
+
+                <!-- Tarjeta Groq -->
+                <div class="provider-key-card">
+                    <div class="provider-card-header">
+                        <div class="provider-title-group">
+                            <span class="provider-logo groq-logo">GROQ</span>
+                            <div>
+                                <h4>Groq Cloud API</h4>
+                                <span class="provider-sub">Llama 3.3 70B • ~300 tokens/seg</span>
+                            </div>
+                        </div>
+                        <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="btn-get-key">
+                            Obtener clave gratis ↗
+                        </a>
+                    </div>
+                    <div class="form-group">
+                        <label for="groq-key-input">Clave API de Groq (gsk_...)</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="groq-key-input" placeholder="Pega aquí tu clave gsk_...">
+                            <button type="button" class="btn-toggle-eye" data-target="groq-key-input" title="Mostrar/Ocultar">👁️</button>
+                        </div>
+                        <span id="groq-status-text" class="field-hint">No configurada</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Gemini -->
+                <div class="provider-key-card">
+                    <div class="provider-card-header">
+                        <div class="provider-title-group">
+                            <span class="provider-logo gemini-logo">GEMINI</span>
+                            <div>
+                                <h4>Google AI Studio</h4>
+                                <span class="provider-sub">Gemini 1.5 Flash • Auditoría de Casos Borde</span>
+                            </div>
+                        </div>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="btn-get-key">
+                            Obtener clave gratis ↗
+                        </a>
+                    </div>
+                    <div class="form-group">
+                        <label for="gemini-key-input">Clave API de Gemini (AIza...)</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="gemini-key-input" placeholder="Pega aquí tu clave AIza...">
+                            <button type="button" class="btn-toggle-eye" data-target="gemini-key-input" title="Mostrar/Ocultar">👁️</button>
+                        </div>
+                        <span id="gemini-status-text" class="field-hint">No configurada</span>
+                    </div>
+                </div>
+
+                <!-- Explicación de Destilación -->
+                <div class="distillation-callout">
+                    <div class="callout-icon">💡</div>
+                    <div class="callout-text">
+                        <strong>¿Cómo entrena esto a tu IA local?</strong><br>
+                        Cada vez que Groq y Gemini debaten y llegan a un consenso final de alta calidad, la respuesta completa se guarda en <code>data/distillation_dataset.jsonl</code> y en la memoria RAG local. Esto te permite afinar tu modelo local Qwen 7B con respuestas maestras sin pagar por GPUs de entrenamiento.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cancel-keys" class="btn-secondary">Cancelar</button>
+                <button id="btn-save-keys" class="btn-primary">Guardar y Activar Debate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=2"></script>
+</body>
+</html>
