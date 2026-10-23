@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const badgeGroq = document.getElementById("badge-groq");
     const badgeGemini = document.getElementById("badge-gemini");
     const valDistillCount = document.getElementById("val-distill-count");
+    const badgeWatchdogBot = document.getElementById("badge-watchdog-bot");
+    const valWatchdogProcs = document.getElementById("val-watchdog-procs");
+    const valWatchdogAlerts = document.getElementById("val-watchdog-alerts");
 
     // Barra de Navegación & Modos
     const navModeTitle = document.getElementById("nav-mode-title");
@@ -154,6 +157,27 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.debate) {
                 updateProviderBadges(data.debate);
             }
+
+            // Consultar estado del Watchdog & Supervisor de Trading
+            try {
+                const wdRes = await fetch("/api/watchdog/status");
+                if (wdRes.ok) {
+                    const wd = await wdRes.json();
+                    if (badgeWatchdogBot) {
+                        const hasProcs = wd.process_count > 0;
+                        badgeWatchdogBot.className = hasProcs ? "stat-val status-pill online" : "stat-val status-pill";
+                        badgeWatchdogBot.textContent = hasProcs ? "Activo (Operando)" : "En Espera";
+                    }
+                    if (valWatchdogProcs) {
+                        valWatchdogProcs.textContent = `${wd.process_count} scripts`;
+                    }
+                    if (valWatchdogAlerts) {
+                        const alertCount = (wd.recent_alerts || []).length;
+                        valWatchdogAlerts.textContent = `${alertCount} alertas`;
+                        valWatchdogAlerts.className = alertCount > 0 ? "stat-val accent-amber" : "stat-val accent-green";
+                    }
+                }
+            } catch (wdErr) {}
         } catch (err) {
             badgeEngine.className = "stat-val status-pill offline";
             badgeEngine.textContent = "Desconectado";
@@ -411,6 +435,108 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>Par de razonamiento registrado para auto-entrenamiento (distillation dataset)</span>
             `;
             bubble.appendChild(distillBadge);
+        }
+
+        // Barra de Feedback y Corrección del Usuario
+        if (role === "ai" && !text.startsWith("❌") && !text.startsWith("🧹") && !text.startsWith("⚠️")) {
+            const feedbackBar = document.createElement("div");
+            feedbackBar.className = "msg-feedback-bar";
+            feedbackBar.innerHTML = `
+                <button type="button" class="feedback-btn btn-thumb-up" title="Respuesta precisa y útil">
+                    <span>👍</span>
+                    <span>Correcto</span>
+                </button>
+                <button type="button" class="feedback-btn btn-thumb-down" title="Respuesta errónea o incompleta">
+                    <span>👎</span>
+                </button>
+                <button type="button" class="feedback-btn btn-correction" title="Corregir a AURA y guardar en su memoria">
+                    <span>✏️ Corregir</span>
+                </button>
+                <span class="feedback-status"></span>
+            `;
+
+            const btnUp = feedbackBar.querySelector(".btn-thumb-up");
+            const btnDown = feedbackBar.querySelector(".btn-thumb-down");
+            const btnCorrect = feedbackBar.querySelector(".btn-correction");
+            const statusSpan = feedbackBar.querySelector(".feedback-status");
+
+            const lastUserMsg = chatHistory.slice().reverse().find(m => m.role === "user");
+            const queryText = lastUserMsg ? lastUserMsg.content : "";
+
+            btnUp.addEventListener("click", async () => {
+                btnUp.classList.add("active");
+                btnDown.classList.remove("active");
+                statusSpan.textContent = "¡Registrado!";
+                try {
+                    await fetch("/api/feedback", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            query: queryText,
+                            correction: "CORRECTO: El usuario validó la respuesta como adecuada y precisa.",
+                            agent_output: text
+                        })
+                    });
+                } catch(e) {}
+            });
+
+            btnDown.addEventListener("click", () => {
+                btnDown.classList.add("active");
+                btnUp.classList.remove("active");
+                openCorrectionBox();
+            });
+
+            btnCorrect.addEventListener("click", () => {
+                openCorrectionBox();
+            });
+
+            function openCorrectionBox() {
+                if (bubble.querySelector(".inline-correction-box")) return;
+                const corrBox = document.createElement("div");
+                corrBox.className = "inline-correction-box";
+                corrBox.innerHTML = `
+                    <div class="correction-header">
+                        <span>💡 ¿Qué debió responder o hacer AURA?</span>
+                        <button type="button" class="btn-close-corr" title="Cerrar">✕</button>
+                    </div>
+                    <textarea class="correction-input" placeholder="Escribe la respuesta esperada o lo que faltó..."></textarea>
+                    <div class="correction-actions">
+                        <button type="button" class="btn-save-corr">Guardar en Base de Aprendizaje</button>
+                    </div>
+                `;
+                const txtArea = corrBox.querySelector(".correction-input");
+                const btnSave = corrBox.querySelector(".btn-save-corr");
+                const btnClose = corrBox.querySelector(".btn-close-corr");
+
+                btnClose.addEventListener("click", () => corrBox.remove());
+                btnSave.addEventListener("click", async () => {
+                    const correctionVal = txtArea.value.trim();
+                    if (!correctionVal) return;
+                    btnSave.disabled = true;
+                    btnSave.textContent = "Guardando...";
+                    try {
+                        const res = await fetch("/api/feedback", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                query: queryText,
+                                correction: correctionVal,
+                                agent_output: text
+                            })
+                        });
+                        corrBox.innerHTML = `<div class="correction-success">✅ ¡Corrección registrada en feedback/ para reentrenamiento!</div>`;
+                        statusSpan.textContent = "Corrección guardada";
+                        setTimeout(() => corrBox.remove(), 4000);
+                    } catch(err) {
+                        btnSave.disabled = false;
+                        btnSave.textContent = "Error al guardar";
+                    }
+                });
+                bubble.appendChild(corrBox);
+                txtArea.focus();
+            }
+
+            bubble.appendChild(feedbackBar);
         }
 
         if (role === "user") {

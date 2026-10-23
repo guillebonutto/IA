@@ -18,68 +18,9 @@ from pathlib import Path
 class AgentTools:
     def __init__(self, workspace_root=None):
         self.workspace_root = workspace_root or os.getcwd()
+        self.parent_dir = os.path.dirname(os.path.abspath(self.workspace_root))
         self.current_dir = None
 
-    def _resolve_path(self, path: str) -> str:
-        """
-        Resuelve rutas relativas o nombres de carpetas de forma inteligente:
-        1. Si path es '.' o vacío, devuelve current_dir si está fijado, sino workspace_root.
-        2. Si es ruta absoluta existente, la devuelve directamente.
-        3. Si existe relativa a current_dir (última carpeta navegada), la devuelve.
-        4. Si existe relativa a workspace_root (IA), la devuelve.
-        5. Si existe en la carpeta padre (ej: Downloads), la devuelve.
-        6. Búsqueda insensible a mayúsculas/minúsculas en carpetas navegadas, workspace o padre.
-        """
-        if not path or path.strip() in (".", ""):
-            return self.current_dir or self.workspace_root
-
-        clean_path = path.strip().strip("'\"")
-        base = os.path.basename(clean_path).lower()
-
-        # Placeholders genéricos del modelo (ej: /path/to/directory)
-        if "path/to" in clean_path.lower() or base in ("directory", "folder", "directorio", "carpeta", "path"):
-            return self.current_dir or self.workspace_root
-
-        # Alias comunes para el workspace del usuario
-        if clean_path.lower() in ("ia", "workspace", "root", "raiz", "raíz"):
-            return self.workspace_root
-
-        # 1. Ruta absoluta
-        if os.path.isabs(clean_path):
-            if os.path.exists(clean_path):
-                return clean_path
-            # Búsqueda insensible a mayúsculas en el directorio contenedor de la ruta
-            parent = os.path.dirname(clean_path)
-            if os.path.exists(parent):
-                for item in os.listdir(parent):
-                    if item.lower() == base:
-                        return os.path.join(parent, item)
-            grandparent = os.path.dirname(parent)
-            if grandparent and os.path.exists(grandparent):
-                for item in os.listdir(grandparent):
-                    if item.lower() == base:
-                        return os.path.join(grandparent, item)
-
-        # 2. Probar ruta directa en current_dir, workspace_root o parent_dir
-        for root in [self.current_dir, self.workspace_root, self.parent_dir]:
-            if root and os.path.exists(root):
-                candidate = os.path.join(root, clean_path)
-                if os.path.exists(candidate):
-                    return candidate
-
-        # 3. Búsqueda inteligente por nombre insensible a mayúsculas y signos
-        found = (
-            self._find_in_dir(self.current_dir, clean_path) or
-            self._find_in_dir(self.workspace_root, clean_path) or
-            self._find_in_dir(self.parent_dir, clean_path) or
-            self._find_in_dir(self.current_dir, base) or
-            self._find_in_dir(self.workspace_root, base) or
-            self._find_in_dir(self.parent_dir, base)
-        )
-        if found:
-            return found
-
-        return clean_path
 
     def _find_in_dir(self, directory: str, query: str, check_subdirs: bool = True) -> str:
         """Busca un archivo o carpeta en un directorio tolerando mayúsculas, signos y errores de extensión (ej: .ñy -> .py)."""
@@ -152,6 +93,8 @@ class AgentTools:
             return self.current_dir or self.workspace_root
 
         clean_path = path.strip().strip("'\"")
+        # Quitar prefijos accidentales como .git/ o git/ si el modelo alucina rutas internas
+        clean_path = re.sub(r'^\.?git[\\/]', '', clean_path, flags=re.IGNORECASE)
 
         # 1. Ruta absoluta
         if os.path.isabs(clean_path):
@@ -167,6 +110,19 @@ class AgentTools:
                 return found_gp
             return clean_path
 
+        # 1.5. Coincidencia directa o insensible a mayúsculas en directorio padre (ej: Bot-08-09 en Downloads)
+        parent_dir = os.path.dirname(self.workspace_root)
+        if parent_dir and os.path.exists(parent_dir):
+            direct_parent = os.path.join(parent_dir, clean_path)
+            if os.path.exists(direct_parent):
+                return direct_parent
+            try:
+                for item in os.listdir(parent_dir):
+                    if item.lower() == clean_path.lower():
+                        return os.path.join(parent_dir, item)
+            except Exception:
+                pass
+
         # 2. Búsqueda en el directorio actualmente navegado (si hay uno activo)
         if self.current_dir:
             found_curr = self._find_in_dir(self.current_dir, clean_path)
@@ -178,11 +134,11 @@ class AgentTools:
         if found_ws:
             return found_ws
 
-        # 4. Búsqueda en el directorio padre (proyectos hermanos: ../)
-        parent_dir = os.path.dirname(self.workspace_root)
-        found_parent = self._find_in_dir(parent_dir, clean_path)
-        if found_parent:
-            return found_parent
+        # 4. Búsqueda recursiva en el directorio padre si no se encontró antes
+        if parent_dir and os.path.exists(parent_dir):
+            found_parent = self._find_in_dir(parent_dir, clean_path)
+            if found_parent:
+                return found_parent
 
         candidate = os.path.abspath(os.path.join(self.workspace_root, clean_path))
         return candidate
@@ -198,6 +154,30 @@ class AgentTools:
             clean_cmd = ps_unwrap.group(1).strip()
             if (clean_cmd.startswith('"') and clean_cmd.endswith('"')) or (clean_cmd.startswith("'") and clean_cmd.endswith("'")):
                 clean_cmd = clean_cmd[1:-1].strip()
+
+        # Guardarraíles de Seguridad: bloquear comandos destructivos o peligrosos
+        BLOCKED_PATTERNS = [
+            r"\bformat\b",
+            r"\bdiskpart\b",
+            r"\brmdir\s+/[sS]",
+            r"\bdel\s+.*(/s|/f|/q)",
+            r"remove-item\s+.*(-recurse|-force)",
+            r"\bshutdown\b",
+            r"\bstop-computer\b",
+            r"\brestart-computer\b",
+            r"taskkill\s+.*(pibot|main\.py)",
+            r"stop-process\s+.*(pibot|main\.py)",
+            r"git\s+reset\s+--hard",
+            r"git\s+clean\s+-fdx"
+        ]
+        for pattern in BLOCKED_PATTERNS:
+            if re.search(pattern, clean_cmd, re.IGNORECASE):
+                return {
+                    "exit_code": -1,
+                    "stdout": "",
+                    "stderr": f"[Guardarraíl de Seguridad AURA]: El comando '{clean_cmd}' fue bloqueado por prevención de daños en el sistema o bots de trading.",
+                    "success": False
+                }
 
         try:
             process = subprocess.run(
@@ -280,8 +260,9 @@ class AgentTools:
 
         try:
             all_items = os.listdir(resolved)
-            dirs = sorted([i for i in all_items if os.path.isdir(os.path.join(resolved, i))])
-            files = [i for i in all_items if os.path.isfile(os.path.join(resolved, i))]
+            IGNORED_DIRS = {'.git', '.pytest_cache', '__pycache__', '.venv', 'venv', '.idea', '.vscode', 'node_modules', '.mypy_cache', '.ruff_cache'}
+            dirs = sorted([i for i in all_items if os.path.isdir(os.path.join(resolved, i)) and i not in IGNORED_DIRS and not i.startswith('.')])
+            files = [i for i in all_items if os.path.isfile(os.path.join(resolved, i)) and not i.startswith('.')]
             
             CODE_EXTS = (
                 '.py', '.pyw', '.js', '.ts', '.jsx', '.tsx', '.json',
@@ -350,6 +331,21 @@ class AgentTools:
         except Exception:
             pass
         return stats
+
+    def get_watchdog_report(self) -> dict:
+        """Devuelve el reporte del supervisor: procesos de trading activos, logs y hardware."""
+        try:
+            from .watchdog import AuraWatchdog
+        except Exception:
+            try:
+                from agent.watchdog import AuraWatchdog
+            except Exception:
+                from watchdog import AuraWatchdog
+        wd = AuraWatchdog(workspace_root=self.workspace_root)
+        wd._check_system()
+        wd._check_processes()
+        wd._check_bot_logs()
+        return wd.get_status_report()
 
     def get_tools_declarations(self) -> list:
         """Retorna las definiciones de herramientas para el modelo (compatible con function calling)."""
@@ -431,6 +427,17 @@ class AgentTools:
                 "function": {
                     "name": "get_system_stats",
                     "description": "Consulta el estado del sistema: CPU, RAM y espacio en disco.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {}
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_watchdog_report",
+                    "description": "Consulta el reporte del supervisor: verifica si los bots de trading (main.py, PiBot_Terminal) están corriendo, revisa alertas recientes y analiza errores en los logs.",
                     "parameters": {
                         "type": "object",
                         "properties": {}

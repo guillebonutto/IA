@@ -31,12 +31,22 @@ except Exception:
         from .memory import LocalMemory
         from .cloud_debate import CloudDebateEngine
 
+try:
+    from agent.watchdog import AuraWatchdog
+except Exception:
+    try:
+        from watchdog import AuraWatchdog
+    except Exception:
+        from .watchdog import AuraWatchdog
+
 WEB_DIR = os.path.join(BASE_DIR, "web")
 WORKSPACE_DIR = BASE_DIR
 
 memory = LocalMemory()
 agent = LocalAgent(api_base="http://127.0.0.1:8089/v1", workspace=WORKSPACE_DIR, memory=memory)
 debate_engine = CloudDebateEngine()
+watchdog = AuraWatchdog(workspace_root=WORKSPACE_DIR)
+watchdog.start()
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -101,7 +111,7 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
 
             response = {
                 "server_online": server_online,
-                "model": "Qwen 2.5 Coder 1.5B (Local)",
+                "model": "Meta Llama 3.1 8B Instruct (Local)",
                 "system": stats,
                 "memory": mem_stats,
                 "debate": debate_status,
@@ -133,10 +143,22 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
             self._send_json(tools, 200)
             return
 
-        # API: Búsqueda en memoria local
+        # API: Reporte del Watchdog y Supervisor de Trading
+        if path == "/api/watchdog/status":
+            report = watchdog.get_status_report()
+            self._send_json(report, 200)
+            return
+
+        # API: Sincronizar e indexar base de conocimiento
+        if path == "/api/memory/sync":
+            count = memory.sync_knowledge_directory()
+            self._send_json({"success": True, "indexed_documents": count}, 200)
+            return
+
+        # API: Búsqueda en base de conocimiento local
         if path == "/api/memory/search":
             q = query.get("q", [""])[0]
-            results = memory.search(q)
+            results = memory.search_knowledge(q)
             self._send_json(results, 200)
             return
 
@@ -174,6 +196,38 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
             gemini_key = data.get("gemini_key")
             debate_engine.save_keys(groq_key=groq_key, gemini_key=gemini_key)
             self._send_json({"success": True, "status": debate_engine.is_configured()}, 200)
+            return
+
+        # API: Agregar documento manual a la base de conocimiento
+        if path == "/api/memory/add":
+            title = data.get("title", "").strip() or "Nota manual"
+            content = data.get("content", "").strip()
+            source = data.get("source", "").strip() or f"manual_{int(time.time())}.md"
+            if not source.endswith((".md", ".txt")):
+                source = f"{source}.md"
+            if content:
+                # Guardar copia física en knowledge/
+                k_file = os.path.join(memory.knowledge_dir, os.path.basename(source))
+                try:
+                    with open(k_file, "w", encoding="utf-8") as f:
+                        f.write(f"# {title}\n\n{content}\n")
+                except Exception:
+                    pass
+                memory.add_document(source=f"knowledge/{os.path.basename(source)}", title=title, content=content, category="manual", trust_level=1.0)
+                self._send_json({"success": True, "message": "Documento indexado con éxito."}, 200)
+            else:
+                self._send_json({"error": "El contenido no puede estar vacío."}, 400)
+            return
+        # API: Registrar retroalimentación o corrección del usuario
+        if path == "/api/feedback":
+            q = data.get("query", "").strip()
+            corr = data.get("correction", "").strip()
+            out = data.get("agent_output", "").strip()
+            if q and corr:
+                memory.record_feedback(query=q, user_correction=corr, agent_output=out)
+                self._send_json({"success": True, "message": "Feedback guardado en feedback/ para revisión."}, 200)
+            else:
+                self._send_json({"error": "Se requieren campos 'query' y 'correction'."}, 400)
             return
 
         # API: Chat agéntico (Modo Local o Modo Debate Multi-Agente)
@@ -263,6 +317,10 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                         content = (h_msg.get("content") or "").strip()
                         if content and role in ("user", "assistant"):
                             if role == "user" and content.lower() == user_message.lower():
+                                continue
+                            if content.startswith("[Error"):
+                                continue
+                            if role == "assistant" and any(p in content.lower() for p in ["es un json", "la respuesta anterior"]):
                                 continue
                             agent.history.append({"role": role, "content": content})
 
