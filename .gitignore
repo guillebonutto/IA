@@ -26,6 +26,8 @@ scratch/*
 !scratch/audit_prompt_ingestion.py
 !scratch/benchmark_protocol.py
 !scratch/test_real_workload.py
+!scratch/test_context_generation.py
+!scratch/verify_tokenizer.py
 !scratch/audit_ingestion_results.json
 
 # Entornos virtuales y editores
