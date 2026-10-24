@@ -22,7 +22,11 @@ __pycache__/
 *$py.class
 
 # Carpeta de scratchpad y capturas de prueba
-scratch/
+scratch/*
+!scratch/audit_prompt_ingestion.py
+!scratch/benchmark_protocol.py
+!scratch/test_real_workload.py
+!scratch/audit_ingestion_results.json
 
 # Entornos virtuales y editores
 .env
