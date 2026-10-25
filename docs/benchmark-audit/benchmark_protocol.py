@@ -196,12 +196,22 @@ def test_configuration(name: str, args: list):
     finally:
         # Administrar exclusivamente el subproceso generado por este script
         if proc and proc.poll() is None:
-            proc.terminate()
             try:
+                proc.terminate()
                 proc.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
+            except Exception as e_term:
+                try:
+                    proc.kill()
+                    proc.wait(timeout=3)
+                except Exception as e_kill:
+                    pass
+
+            if proc.poll() is None:
+                print(
+                    f"ALERTA DE SEGURIDAD: El subproceso PID {proc.pid} no pudo ser finalizado. "
+                    "No se intentara cerrar procesos ajenos. Verifique manualmente.",
+                    flush=True
+                )
         time.sleep(1)
 
 def main():

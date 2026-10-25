@@ -28,14 +28,16 @@ Este documento reúne la auditoría técnica completa del rendimiento de inferen
 
 Todos los scripts utilizan resolución dinámica de rutas relativas al repositorio, evitando rutas absolutas personales:
 
-| Script | Propósito | Método de Inferencia | Estado |
+| Script / Artefacto | Propósito | Método de Inferencia | Estado |
 | :--- | :--- | :--- | :--- |
 | [`audit_prompt_ingestion.py`](audit_prompt_ingestion.py) | Barrido controlado de ingesta de prompts (256 a 4096 tokens). | Directo por C++ con `llama-bench.exe` en JSON. | Ejecutado y validado. |
 | [`benchmark_protocol.py`](benchmark_protocol.py) | Comparación de variables a 8 hilos (Flash Attention, formatos KV y contexto). | Servidor HTTP `llama-server.exe` en puerto 8082. | Ejecutado y validado. |
 | [`test_real_workload.py`](test_real_workload.py) | Medición de 4 cargas reales con métricas separadas (prefill, TTFT real SSE, gen t/s, HTTP total). | Servidor HTTP `llama-server.exe` en puerto 8089 (streaming SSE). | Ejecutado y validado. |
-| [`test_context_generation.py`](test_context_generation.py) | Benchmark de generación manteniendo `-c 8192` constante y variando contexto previo (256 a 4096 tok). | Servidor HTTP `llama-server.exe` en puerto 8083. | **Diseñado (pruebas estáticas aprobadas; purga de slots y benchmark pendientes de validación en ejecución)**. |
+| [`test_context_generation.py`](test_context_generation.py) | Benchmark de generación manteniendo `-c 8192` constante y variando contexto previo (256 a 4096 tok). | Servidor HTTP `llama-server.exe` en puerto 8083. | **Ejecutado y validado experimentalmente**. |
 | [`verify_tokenizer.py`](verify_tokenizer.py) | Comprobación reproducible del tokenizador (archivos crudos vs ChatML completo; bytes vs tokens). | Dual: endpoint `/tokenize` HTTP y `llama-tokenize.exe`. | Ejecutado y validado. |
 | [`audit_ingestion_results.json`](audit_ingestion_results.json) | Persistencia con separación estricta entre `raw_samples` y `summary_statistics`. | Salida estructurada de `audit_prompt_ingestion.py`. | Validado. |
+| [`context_generation_results.json`](context_generation_results.json) | Resultados empíricos de generación bajo contexto previo creciente (256 a 4096 tok). | Salida estructurada de `test_context_generation.py` (5 repeticiones por longitud). | Validado. |
+| [`thread_topology_comparison_results.json`](thread_topology_comparison_results.json) | Comparación empírica de topología de hilos (`-t 8` vs `-t 4` con `-tb 8` constante). | Salida estructurada de benchmark cruzado ABBA (256 a 4096 tok). | Validado. |
 
 ---
 
@@ -160,108 +162,139 @@ Para medir de manera rigurosa si el tamaño del contexto previo degrada o no la 
      * `cache_contamination`: la petición se completó, pero `cache_n > 0` evidencia reuso inadvertido de prefijos del KV cache.
    * **Conservación íntegra sin descarte silencioso**: Se conservan todas las muestras crudas, el `finish_reason` original y la razón explícita de exclusión (`exclusion_reason`) en el JSON final.
    * **Conteo de muestras válidas reportado por longitud**: El resumen estadístico de cada longitud de contexto (`summary_statistics`) expone explícitamente `valid_runs_count`, `early_terminations_count`, `transport_errors_count` y `cache_reuse_count`.
-6. **Estado de Ejecución y Limitación Técnica Declarada**:
-   * **Pruebas estáticas aprobadas**: La sintaxis, el protocolo, el manejo de procesos y la paridad de scripts han sido validados estáticamente al 100 %.
-   * **Pendiente de validación en ejecución**: La purga efectiva de slots (`/slots/0?action=erase`) en caliente y el benchmark de generación tras ingesta de contexto permanecen **pendientes de validación en ejecución**. No se presenta ningún valor como resultado experimental medido hasta que la prueba sea expresamente autorizada y ejecutada.
+6. **Validación Experimental y Resultados del Protocolo**:
+   * **Purga de slots verificada en ejecución**: Se confirmó que el endpoint `/slots/0?action=erase` responde con `HTTP 200`, resetea el contador del slot en `GET /slots` y garantiza que la inferencia subsiguiente registre estrictamente `timings.cache_n == 0`.
+   * **Cero contaminaciones de caché**: El 100 % de las corridas oficiales (25 de 25) registraron `cache_n == 0`, asegurando que la evaluación de prefill y generación no fue falseada por prefijos previos.
+   * **Cero terminaciones prematuras ni fallos de transporte**: Se obtuvieron 5 de 5 corridas válidas por cada longitud evaluada, con generación completa de 64 tokens por muestra.
 
-### Análisis de la Arquitectura Interna de llama.cpp (b11719): `server_task_result_slot_erase` y `cache_n`
+### A. Resultados Medidos de Generación con Contexto Previo (`context_generation_results.json`)
 
-A fin de sustentar con rigor técnico el comportamiento de la limpieza de ranuras y el seguimiento de caché, se inspeccionó el código fuente y las referencias binarias de `llama.cpp` (`llama-server.exe` / `llama-server-impl.dll` b11719):
+Medición ejecutada con [`test_context_generation.py`](test_context_generation.py) bajo **`-c 8192` constante**, **8 hilos (`-t 8 -tb 8`)**, **FP16 KV-Cache**, **Flash Attention OFF** y **64 tokens generados** a temperatura `0.0`:
 
-#### A. Archivos y Funciones del Código Fuente de Soporte
-* **`tools/server/server-http.cpp`**:
-  * Registra el router HTTP para `/slots/:id_slot`.
-  * Valida la presencia de `params.slot_save_path.empty()`. Si está vacío, rechaza la petición con `HTTP 501`:
-    `"This server does not support slots action. Start it with --slot-save-path"`.
-  * Si `--slot-save-path` está configurado y el query param es `action=erase`, construye una tarea de servidor (`server_task_type::SLOT_ERASE`) y la encola en `server_queue`.
-  * Recibe asíncronamente el resultado `server_task_result_slot_erase` y serializa la respuesta `HTTP 200 OK`.
-* **`tools/server/server-task.h` / `tools/server/server-task.cpp`**:
-  * Declara la estructura `server_task_result_slot_erase` heredada de `server_task_result`.
-  * Maneja el despacho polimórfico verificado en binario mediante:
-    `dynamic_cast<server_task_result_slot_erase*>(result.get()) != nullptr`.
-* **`tools/server/server-context.h` / `tools/server/server-context.cpp`**:
-  * En `server_context::process_tasks()`, procesa la tarea de borrado invocando `slot.reset()`.
-  * `slot.reset()` ejecuta `llama_kv_cache_seq_rm()` sobre el identificador de secuencia del slot, liberando todas las celdas del KV cache asignadas a ese slot y restableciendo `slot.n_prompt_tokens_cache = 0`.
-* **`tools/server/server-common.cpp` y serialización de `timings`**:
-  * Define la semántica de `cache_n` / `n_prompt_tokens_cache`: representa el conteo de tokens del prompt que coincidieron exactamente con prefijos ya residentes en el KV cache.
-  * Si `cache_n > 0`, el servidor omite evaluar esos tokens mediante `llama_decode`, reduciendo artificialmente `prompt_ms` y alterando la latencia inicial.
-  * Por consiguiente, verificar que `cache_n == 0` es la única garantía determinista de que el KV cache fue purgado y que el prefill midió el 100 % de los tokens evaluados.
+| Longitud Objetivo Prompt | Prompt Real Mediano | Contexto Configurado | Ingesta Mediana (Prefill) | TTFT SSE Mediano | Tokens Gen Objetivo (Reales) | Generación Válida (Mediana ± Desv) | Razón Éxito (Válidas / Total) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **256 tok** | 298 tok | 8192 tok | 29.02 ± 5.44 t/s | 10.29 seg | 64 tok (64 tok) | **9.20 ± 3.13 t/s** | 5/5 válidas (0 exclusiones) |
+| **512 tok** | 554 tok | 8192 tok | 31.25 ± 3.71 t/s | 17.75 seg | 64 tok (64 tok) | **12.66 ± 1.14 t/s** | 5/5 válidas (0 exclusiones) |
+| **1024 tok** | 1066 tok | 8192 tok | 31.59 ± 0.75 t/s | 33.74 seg | 64 tok (64 tok) | **12.09 ± 0.74 t/s** | 5/5 válidas (0 exclusiones) |
+| **2048 tok** | 2090 tok | 8192 tok | 29.28 ± 1.06 t/s | 71.40 seg | 64 tok (64 tok) | **10.09 ± 0.43 t/s** | 5/5 válidas (0 exclusiones) |
+| **4096 tok** | 4138 tok | 8192 tok | 26.70 ± 1.07 t/s | 155.00 seg | 64 tok (64 tok) | **8.63 ± 0.67 t/s** | 5/5 válidas (0 exclusiones) |
 
-#### B. Separación Metodológica: Inspección de Código vs Validación en Ejecución
-* **Verificado fehacientemente por inspección estática del código y binario**:
-  1. La existencia y vinculación de `tools/server/server-http.cpp`, `tools/server/server-context.cpp` y `tools/server/server-task.cpp` en el binario compilado.
-  2. La presencia de la clase `server_task_result_slot_erase` y el chequeo en tiempo de ejecución de tipos.
-  3. El requerimiento insoslayable de `--slot-save-path` para habilitar el endpoint de purga (mensaje HTTP 501 literal).
-  4. La existencia del contador `n_prompt_tokens_cache` en el slot y su exportación en los objetos de tiempo y estado.
-* **Pendiente de validación en ejecución (a comprobar al autorizar el benchmark)**:
-  1. Comprobación empírica en el loopback Windows de que la petición `POST /slots/0?action=erase` devuelva efectivamente `HTTP 200` y libere los recursos sin bloqueos de concurrencia.
-  2. Confirmación mediante consulta a `GET /slots` de que `n_prompt_tokens_cache == 0` y `is_processing == false`.
-  3. Validación de que la primera solicitud de inferencia posterior reporte efectivamente `timings.cache_n == 0` en el flujo SSE.
+### B. Análisis del Impacto del Contexto en la Generación
+* **Estabilización de Ingesta**: La velocidad de prefill se mantiene en torno a **31 t/s** entre 512 y 1024 tokens, descendiendo levemente a **29.28 t/s** en 2048 tokens y a **26.70 t/s** en 4096 tokens (desaceleración del 15.5 % en prefill).
+* **Degradación de Decodificación Autoregresiva**: Con la memoria KV cargada, la velocidad de generación pasa de un pico de **12.66 t/s** (512 tok) a **8.63 t/s** (4096 tok), representando una reducción empírica del **31.8 %** en tokens por segundo atribuible a la sobrecarga del cálculo de atención sobre el historial en memoria RAM.
 
 ---
 
-## 7. Eliminación de Riesgos de Proceso y Seguridad Operativa
+## 7. Resultados del Experimento de Topología de Hilos (`thread_topology_comparison_results.json`)
+
+Para resolver la incertidumbre sobre la topología óptima en la arquitectura AMD Zen 1 (Ryzen 5 2400G: 4 núcleos físicos, 8 hilos lógicos SMT), se ejecutó un experimento controlado comparando **`-t 8` frente a `-t 4`** manteniendo el lote constante en **`-tb 8`**, ventana fija **`-c 8192`**, **FP16 KV-Cache** y **Flash Attention OFF**.
+
+### A. Diseño Experimental (Crossover Balanceado ABBA)
+* Se evaluaron 5 longitudes de prompt (256, 512, 1024, 2048 y 4096 tokens) con 5 repeticiones por configuración (50 ejecuciones medidas en total).
+* El orden de ejecución se alternó mediante bloques cruzados ABBA para mitigar sesgos de acumulación térmica y estado del sistema.
+
+### B. Tabla Comparativa de Rendimiento
+
+| Contexto Evaluado | Gen `-t 8` (Mediana ± Desv) | Gen `-t 4` (Mediana ± Desv) | $\Delta$ Generación (%) | Ingesta `-t 8` | Ingesta `-t 4` | $\Delta$ Ingesta (%) | TTFT `-t 8` | TTFT `-t 4` |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **256 tok** | 13.37 ± 0.95 t/s | 10.40 ± 0.36 t/s | **-22.25 %** | 31.50 t/s | 31.35 t/s | -0.48 % | 9.49 seg | 9.53 seg |
+| **512 tok** | 13.04 ± 1.21 t/s | 9.95 ± 0.44 t/s | **-23.75 %** | 33.07 t/s | 31.60 t/s | -4.43 % | 16.78 seg | 17.54 seg |
+| **1024 tok** | 12.71 ± 0.58 t/s | 9.34 ± 0.39 t/s | **-26.53 %** | 31.65 t/s | 32.23 t/s | +1.85 % | 33.70 seg | 33.10 seg |
+| **2048 tok** | 11.16 ± 0.74 t/s | 8.19 ± 0.58 t/s | **-26.65 %** | 30.23 t/s | 29.80 t/s | -1.44 % | 69.16 seg | 70.16 seg |
+| **4096 tok** | 8.70 ± 0.40 t/s | 6.34 ± 0.28 t/s | **-27.06 %** | 26.81 t/s | 26.88 t/s | +0.26 % | 154.35 seg | 153.94 seg |
+
+### C. Conclusiones de Topología para Inferencia en CPU
+1. **SMT (8 hilos) supera a 4 núcleos físicos en un 22 % a 27 % en generación**:
+   * En decodificación autorregresiva token a token, la ejecución está limitada por la latencia del subsistema de memoria RAM DDR4 (memory-bound). Los 8 hilos lógicos permiten ocultar latencias de acceso a memoria mientras otros hilos procesan cálculos matriciales en las unidades vectoriales AVX2.
+   * Reducir a 4 hilos disminuye la variabilidad (desviación estándar 20-60 % menor), pero penaliza severamente el throughput global (pérdida de ~2.3 a 3.0 t/s).
+2. **Independencia de la Ingesta respecto a `-t`**:
+   * La tasa de prefill fue idéntica entre ambas pruebas (~31 t/s a 1024 tok; ~26.8 t/s a 4096 tok), confirmando que `llama.cpp` delega el cálculo de prompts al parámetro `-tb` (fijado en 8).
+3. **Conclusión Acotada de Topología**: En las condiciones evaluadas (KV Cache en precisión FP16 `-ctk f16 -ctv f16`, Flash Attention desactivado `-fa off` y procesamiento de lote `-tb 8`), la asignación de 8 hilos lógicos superó de forma consistente a 4 núcleos físicos en generación (22 % a 27 % de ventaja). Este hallazgo respalda mantener `-t 8` frente a `-t 4` para decodificación en este procesador bajo dicha configuración, sin extrapolarlo como un óptimo global frente a otras combinaciones o cuantizaciones de KV cache (como Q8_0 o Q4_0) no evaluadas en este barrido cruzado.
+
+---
+
+## 8. Eliminación de Riesgos de Proceso y Seguridad Operativa
 
 En versiones preliminares, `benchmark_protocol.py` contenía llamadas a `Stop-Process -Name 'llama-server' -Force`, lo cual implicaba un riesgo inaceptable de terminar procesos ajenos o el servidor de producción.
 
 Se implementaron las siguientes salvaguardas en todos los scripts de prueba:
 1. **Comprobación de puerto sin agresión**: función `is_port_in_use(port)` mediante socket TCP local. Si el puerto está ocupado, el script **aborta con un mensaje explícito** sin cerrar ningún proceso externo.
-2. **Administración exclusiva de PID propio**: el script almacena el PID retornado por `subprocess.Popen` y en su bloque `finally:` administra únicamente ese proceso (`proc.terminate()` y `proc.kill()` en caso de timeout).
-3. **Persistencia de logs de servidor**: la salida de error y arranque del servidor ya no se descarta en `DEVNULL`; se redirige a archivos dedicados (`benchmark_server.log`, `context_server.log`) para diagnóstico de fallas.
+2. **Administración exclusiva de PID propio**: el script almacena el PID retornado por `subprocess.Popen` y en su bloque `finally:` administra únicamente ese proceso (`proc.terminate()` y `proc.kill()` en caso de timeout), sin alterar otros procesos del sistema.
+3. **Registro estructurado de limpieza (`process_cleanup`)**: Cada benchmark registra en el JSON de resultados el método exacto de cierre (`natural`, `terminate`, `kill`), el código de salida de Win32, y la eliminación garantizada del directorio temporal `.slot_cache_temp`.
+4. **Persistencia garantizada ante fallos o interrupciones**: Si ocurre una excepción o interrupción durante la prueba, se atrapa el evento y se persiste el estado de fallo con metadatos de diagnóstico en disco antes de propagar el error.
+5. **Persistencia de logs de servidor**: la salida de error y arranque del servidor se redirige a archivos dedicados (`benchmark_server.log`, `context_server.log`) para diagnóstico de fallas sin saturar la consola.
 
 ---
 
-## 8. Esquema de Persistencia de Datos Crudos
+## 9. Esquema de Persistencia de Datos Crudos
 
-Para evitar clasificar resúmenes estadísticos como datos crudos, los archivos JSON (`audit_ingestion_results.json` y futuros resultados) adoptan una estructura que separa formalmente las muestras originales de las estadísticas agregadas:
+Para evitar clasificar resúmenes estadísticos como datos crudos, los archivos JSON (`audit_ingestion_results.json`, `context_generation_results.json`, `thread_topology_comparison_results.json`) adoptan una estructura que separa formalmente las muestras originales de las estadísticas agregadas:
 
 ```json
 {
   "target_prompt_tokens": 4096,
   "raw_samples": {
-    "prompt_samples_ns": [152636725200, 152893540100, 211562912400],
-    "prompt_samples_ts": [26.83, 26.79, 19.36],
-    "gen_samples_ns": [1469245100, 1468921300, 1471012500],
-    "gen_samples_ts": [10.89, 10.89, 10.88]
+    "runs": [
+      {
+        "repetition": 1,
+        "reported_prompt_n": 4138,
+        "reported_cache_n": 0,
+        "reported_predicted_n": 64,
+        "prompt_ms": 154983.88,
+        "predicted_ms": 7414.62,
+        "prompt_tps": 26.70,
+        "gen_tps": 8.63,
+        "client_ttft_sse_s": 155.00,
+        "finish_reason": "stop"
+      }
+    ]
   },
   "summary_statistics": {
-    "prompt_median_tps": 26.79,
-    "prompt_avg_tps": 24.33,
-    "prompt_stddev_tps": 4.30,
-    "prompt_median_duration_s": 152.89,
-    "gen_reference_median_tps": 10.89,
-    "gen_reference_stddev_tps": 0.31
-  },
-  "metadata": {
-    "note_on_generation": "La prueba de generacion de llama-bench se ejecuta con n_prompt=0 y no mide degradacion tras evaluar el prompt."
+    "valid_runs_count": 5,
+    "early_terminations_count": 0,
+    "transport_errors_count": 0,
+    "cache_reuse_count": 0,
+    "median_prompt_tps": 26.70,
+    "stddev_prompt_tps": 1.07,
+    "median_gen_tps_valid": 8.63,
+    "stddev_gen_tps_valid": 0.67,
+    "median_client_ttft_s": 155.00
   }
 }
 ```
 
 ---
 
-## 9. Instrucciones de Reproducción
+## 10. Instrucciones de Reproducción
 
-Todas las instrucciones utilizan rutas relativas ejecutables desde la raíz del repositorio:
+Todas las instrucciones utilizan rutas relativas ejecutables desde la raíz del repositorio en Windows:
 
 ### A. Validar Tokenizador (Archivos y Plantilla ChatML)
+Audita el conteo de tokens vs bytes y evalúa la cabida en ventanas `-c 4096` y `-c 8192`:
 ```cmd
 python docs/benchmark-audit/verify_tokenizer.py
 ```
 
-### B. Ingesta Controlada (llama-bench)
+### B. Ingesta Controlada por C++ (`llama-bench`)
+Ejecuta el barrido de prefill en C++ puro (256 a 4096 tokens, 3 repeticiones):
 ```cmd
 python docs/benchmark-audit/audit_prompt_ingestion.py
 ```
 
 ### C. Evaluación de Cargas Reales (Streaming SSE y Métricas Separadas)
-Asegurarse de tener el servidor activo en el puerto 8089 y ejecutar:
+Asegurarse de tener el servidor de producción activo en el puerto 8089 y ejecutar:
 ```cmd
 python docs/benchmark-audit/test_real_workload.py
 ```
 
-### D. Benchmark de Contexto Real (Pendiente de Ejecución)
-Para ejecutar la prueba de degradación tras autorización:
+### D. Benchmark de Contexto de Generación (`test_context_generation.py`)
+Levanta un servidor temporal aislado en puerto 8083 con `-c 8192`, purga ranuras por HTTP y mide 5 repeticiones de 64 tokens por cada longitud de contexto:
 ```cmd
 python docs/benchmark-audit/test_context_generation.py --run
+```
+
+### E. Protocolo de Comparación de Parámetros (`benchmark_protocol.py`)
+Evalúa combinaciones de Flash Attention y tipos de cuantización KV en puerto 8082:
+```cmd
+python docs/benchmark-audit/benchmark_protocol.py
 ```
