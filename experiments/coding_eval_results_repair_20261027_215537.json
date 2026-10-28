@@ -1,0 +1,1100 @@
+{
+  "timestamp_utc": "2026-10-28T00:55:37.103751+00:00",
+  "suite": "evals/coding_tasks.json",
+  "methodology": "One initial completion, hidden benchmark acceptance evaluator for executable tasks, max two bounded repairs with revalidation; semantic tasks receive a single completion and rubric scoring only. The acceptance tests are not included in the generation prompt.",
+  "experimental_server": "127.0.0.1:8083",
+  "model": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
+  "llama_cpp": "build 11719; -c 4096 -t 8 -tb 8 -b 512 -ub 128 -fa off -np 1",
+  "agent_output_tokens": 1024,
+  "max_code_repairs": 2,
+  "baseline_note": "Historical 2/12 single-generation runs are not directly comparable because this run uses isolated feedback and repairs; historical contract-guided run 7/12 used two total attempts and a different method.",
+  "summary": {
+    "passed_tasks": 5,
+    "total_tasks": 12,
+    "pass_rate": 0.4167,
+    "repair_calls": 15,
+    "total_wall_seconds": 2437.522,
+    "median_wall_seconds": 181.073,
+    "p95_wall_seconds": 347.074,
+    "total_verification_seconds": 52.352,
+    "model_calls_first_run_instrumented_for_tasks_01_10": 25,
+    "model_calls_first_run_complete": null,
+    "prompt_tokens_first_run_instrumented_for_tasks_01_10": 35574,
+    "completion_tokens_first_run_instrumented_for_tasks_01_10": 12078,
+    "model_round_trip_seconds_instrumented_for_tasks_01_10": 2059.936,
+    "note": "First-run pass score, wall times, repair counts and evaluator totals cover all 12 tasks. The original metrics collector failed to retain HTTP metrics for tasks 11-12; full-run totals for calls and tokens are therefore unknown, not zero."
+  },
+  "task_results": [
+    {
+      "task_id": "task_01_lru_cache",
+      "evaluation_mode": "python_test_execution",
+      "passed": true,
+      "status": "PASS",
+      "final_error": "",
+      "repair_calls": 1,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_basic_put_get (__main__.TestLRUCache.test_basic_put_get) ... FAIL test_get_updates_recency (__main__.TestLRUCache.test_get_updates_recency) ... FAIL test_invalid_capacity (__main__.TestLRUCache.test_invalid_capacity) ... ok test_single_element_capacity (__main__.TestLRUCache.test_single_element_capacity) ... FAIL test_update_existing_key_updates_recency (__main__.TestLRUCache.test_update_existing_key_updates_recency) ... FAIL ====================================================================== FAIL: test_basic_put_get (__main__.TestLRUCache.test_basic_put_get) --------------------------",
+          "elapsed_s": 0.103
+        },
+        {
+          "status": "PASS",
+          "passed": true,
+          "error": "",
+          "elapsed_s": 0.089
+        }
+      ],
+      "model_call_count": 2,
+      "prompt_tokens": 2648,
+      "completion_tokens": 1254,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 177.035,
+          "request_serialization_seconds": 7.8e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1214,
+          "completion_tokens": 704,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 0,
+            "prompt_n": 1214,
+            "prompt_ms": 61110.247,
+            "prompt_per_token_ms": 50.33792998352554,
+            "prompt_per_second": 19.865735446953764,
+            "predicted_n": 704,
+            "predicted_ms": 115793.93,
+            "predicted_per_token_ms": 164.7139829302987,
+            "predicted_per_second": 6.071129980647518
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 103.7928,
+          "request_serialization_seconds": 0.000104,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1434,
+          "completion_tokens": 550,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 584,
+            "prompt_ms": 26434.956,
+            "prompt_per_token_ms": 45.26533561643836,
+            "prompt_per_second": 22.091960357338973,
+            "predicted_n": 550,
+            "predicted_ms": 77310.419,
+            "predicted_per_token_ms": 140.82043533697632,
+            "predicted_per_second": 7.101242071912713
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 7.98,
+      "wall_seconds": 288.81,
+      "model_round_trip_seconds": 280.828
+    },
+    {
+      "task_id": "task_02_sliding_rate_limiter",
+      "evaluation_mode": "python_test_execution",
+      "passed": true,
+      "status": "PASS",
+      "final_error": "",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_basic_window_allowing (__main__.TestSlidingLimiter.test_basic_window_allowing) ... ERROR test_concurrent_access (__main__.TestSlidingLimiter.test_concurrent_access) ... Exception in thread Thread-1 (worker): Exception in thread Thread-2 (worker): Exception in thread Thread-3 (worker): Exception in thread Thread-4 (worker): Exception in thread Thread-5 (worker): Exception in thread Thread-6 (worker): Exception in thread Thread-7 (worker): Exception in thread Thread-8 (worker): Traceback (most recent call last): Traceback (most recent call last): Traceback (most recent call last): Traceback",
+          "elapsed_s": 0.128
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_basic_window_allowing (__main__.TestSlidingLimiter.test_basic_window_allowing) ... ERROR test_concurrent_access (__main__.TestSlidingLimiter.test_concurrent_access) ... Exception in thread Thread-1 (worker): Exception in thread Thread-2 (worker): Exception in thread Thread-3 (worker): Exception in thread Thread-4 (worker): Exception in thread Thread-5 (worker): Exception in thread Thread-6 (worker): Exception in thread Thread-7 (worker): Exception in thread Thread-8 (worker): Traceback (most recent call last): Traceback (most recent call last): Exception in thread Thread-10 (worker): Exce",
+          "elapsed_s": 0.288
+        },
+        {
+          "status": "PASS",
+          "passed": true,
+          "error": "",
+          "elapsed_s": 0.143
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4148,
+      "completion_tokens": 1147,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 102.9524,
+          "request_serialization_seconds": 4.5e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1222,
+          "completion_tokens": 645,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 852,
+            "prompt_n": 370,
+            "prompt_ms": 18254.56,
+            "prompt_per_token_ms": 49.336648648648655,
+            "prompt_per_second": 20.26890815226442,
+            "predicted_n": 645,
+            "predicted_ms": 84645.494,
+            "predicted_per_token_ms": 131.43710248447206,
+            "predicted_per_second": 7.608201802212886
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 69.3029,
+          "request_serialization_seconds": 5.6e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1462,
+          "completion_tokens": 243,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 612,
+            "prompt_ms": 28631.201,
+            "prompt_per_token_ms": 46.78300816993464,
+            "prompt_per_second": 21.37528216158309,
+            "predicted_n": 243,
+            "predicted_ms": 40637.975,
+            "predicted_per_token_ms": 167.9255165289256,
+            "predicted_per_second": 5.9550211347883355
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 64.4383,
+          "request_serialization_seconds": 8.6e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1464,
+          "completion_tokens": 259,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 864,
+            "prompt_n": 600,
+            "prompt_ms": 31327.025,
+            "prompt_per_token_ms": 52.211708333333334,
+            "prompt_per_second": 19.152792197790884,
+            "predicted_n": 259,
+            "predicted_ms": 33099.878,
+            "predicted_per_token_ms": 128.29410077519378,
+            "predicted_per_second": 7.794590662841719
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 6.033,
+      "wall_seconds": 242.729,
+      "model_round_trip_seconds": 236.694
+    },
+    {
+      "task_id": "task_03_flatten_nested_json",
+      "evaluation_mode": "python_test_execution",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL test_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok test_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ok test_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok test_with_lists (__main__.TestFlattenDict.test_with_lists) ... ok ====================================================================== FAIL: test_empty_containers_preserved (__main__.Tes",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL test_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok test_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ERROR test_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok test_with_lists (__main__.TestFlattenDict.test_with_lists) ... ERROR ====================================================================== ERROR: test_pure_function_no_mutation (__main",
+          "elapsed_s": 0.084
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL test_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok test_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ERROR test_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok test_with_lists (__main__.TestFlattenDict.test_with_lists) ... ERROR ====================================================================== ERROR: test_pure_function_no_mutation (__main",
+          "elapsed_s": 0.08
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL test_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok test_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ok test_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok test_with_lists (__main__.TestFlattenDict.test_with_lists) ... ok ====================================================================== FAIL: test_empty_containers_preserved (__main__.Tes",
+          "elapsed_s": 0.077
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4696,
+      "completion_tokens": 481,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 40.7875,
+          "request_serialization_seconds": 6.3e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1233,
+          "completion_tokens": 158,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 383,
+            "prompt_ms": 16987.884,
+            "prompt_per_token_ms": 44.35478851174934,
+            "prompt_per_second": 22.545480060965804,
+            "predicted_n": 158,
+            "predicted_ms": 23756.653,
+            "predicted_per_token_ms": 151.3162611464968,
+            "predicted_per_second": 6.60867505199491
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 60.8833,
+          "request_serialization_seconds": 5e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 2004,
+          "completion_tokens": 158,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 1390,
+            "prompt_n": 614,
+            "prompt_ms": 31528.208,
+            "prompt_per_token_ms": 51.34887296416938,
+            "prompt_per_second": 19.47462412072389,
+            "predicted_n": 158,
+            "predicted_ms": 29342.913,
+            "predicted_per_token_ms": 186.89753503184713,
+            "predicted_per_second": 5.350525355134305
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 44.5495,
+          "request_serialization_seconds": 4.1e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1459,
+          "completion_tokens": 165,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 890,
+            "prompt_n": 569,
+            "prompt_ms": 25385.029,
+            "prompt_per_token_ms": 44.61340773286467,
+            "prompt_per_second": 22.414786289982178,
+            "predicted_n": 165,
+            "predicted_ms": 19114.978,
+            "predicted_per_token_ms": 116.55474390243901,
+            "predicted_per_second": 8.579659364504632
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 1.557,
+      "wall_seconds": 147.779,
+      "model_round_trip_seconds": 146.22
+    },
+    {
+      "task_id": "task_04_debug_mutable_default_and_closure",
+      "evaluation_mode": "python_test_execution",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "test_closure_late_binding_resolved (__main__.TestMakeHandlers.test_closure_late_binding_resolved) ... ok test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ... FAIL test_no_mutation_of_caller_dict (__main__.TestMakeHandlers.test_no_mutation_of_caller_dict) ... ok ====================================================================== FAIL: test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_3f7_9cfc",
+      "repair_calls": 1,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_closure_late_binding_resolved (__main__.TestMakeHandlers.test_closure_late_binding_resolved) ... ok test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ... FAIL test_no_mutation_of_caller_dict (__main__.TestMakeHandlers.test_no_mutation_of_caller_dict) ... ok ====================================================================== FAIL: test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_3f7_9cfc",
+          "elapsed_s": 0.08
+        }
+      ],
+      "model_call_count": 2,
+      "prompt_tokens": 2648,
+      "completion_tokens": 506,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 63.1533,
+          "request_serialization_seconds": 4.1e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1212,
+          "completion_tokens": 478,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 362,
+            "prompt_ms": 12728.608,
+            "prompt_per_token_ms": 35.16190055248619,
+            "prompt_per_second": 28.439873393854224,
+            "predicted_n": 478,
+            "predicted_ms": 50414.989,
+            "predicted_per_token_ms": 105.69180083857442,
+            "predicted_per_second": 9.461471865043945
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 25.6017,
+          "request_serialization_seconds": 4.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1436,
+          "completion_tokens": 28,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 586,
+            "prompt_ms": 23178.047,
+            "prompt_per_token_ms": 39.55298122866894,
+            "prompt_per_second": 25.282544297196395,
+            "predicted_n": 28,
+            "predicted_ms": 2399.648,
+            "predicted_per_token_ms": 88.87585185185186,
+            "predicted_per_second": 11.251650242035497
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 0.468,
+      "wall_seconds": 89.224,
+      "model_round_trip_seconds": 88.755
+    },
+    {
+      "task_id": "task_05_debug_binary_search_edge_cases",
+      "evaluation_mode": "python_test_execution",
+      "passed": true,
+      "status": "PASS",
+      "final_error": "",
+      "repair_calls": 0,
+      "evaluation_attempts": [
+        {
+          "status": "PASS",
+          "passed": true,
+          "error": "",
+          "elapsed_s": 0.089
+        }
+      ],
+      "model_call_count": 1,
+      "prompt_tokens": 1235,
+      "completion_tokens": 501,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 75.9095,
+          "request_serialization_seconds": 6.2e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1235,
+          "completion_tokens": 501,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 385,
+            "prompt_ms": 15325.162,
+            "prompt_per_token_ms": 39.805615584415584,
+            "prompt_per_second": 25.122083538170752,
+            "predicted_n": 501,
+            "predicted_ms": 60575.743,
+            "predicted_per_token_ms": 121.151486,
+            "predicted_per_second": 8.254129049642858
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 3.716,
+      "wall_seconds": 79.626,
+      "model_round_trip_seconds": 75.909
+    },
+    {
+      "task_id": "task_06_edge_case_interval_merging",
+      "evaluation_mode": "python_test_execution",
+      "passed": true,
+      "status": "PASS",
+      "final_error": "",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_empty_input (__main__.TestMergeIntervals.test_empty_input) ... ok test_invalid_interval_raises_value_error (__main__.TestMergeIntervals.test_invalid_interval_raises_value_error) ... FAIL test_point_intervals (__main__.TestMergeIntervals.test_point_intervals) ... ok test_standard_merge (__main__.TestMergeIntervals.test_standard_merge) ... ok test_touching_borders_merged (__main__.TestMergeIntervals.test_touching_borders_merged) ... ok test_unsorted_input (__main__.TestMergeIntervals.test_unsorted_input) ... ok ====================================================================== FAIL: tes",
+          "elapsed_s": 0.084
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_empty_input (__main__.TestMergeIntervals.test_empty_input) ... ok test_invalid_interval_raises_value_error (__main__.TestMergeIntervals.test_invalid_interval_raises_value_error) ... FAIL test_point_intervals (__main__.TestMergeIntervals.test_point_intervals) ... ok test_standard_merge (__main__.TestMergeIntervals.test_standard_merge) ... ok test_touching_borders_merged (__main__.TestMergeIntervals.test_touching_borders_merged) ... ok test_unsorted_input (__main__.TestMergeIntervals.test_unsorted_input) ... ok ====================================================================== FAIL: tes",
+          "elapsed_s": 0.074
+        },
+        {
+          "status": "PASS",
+          "passed": true,
+          "error": "",
+          "elapsed_s": 0.085
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4141,
+      "completion_tokens": 1100,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 47.9595,
+          "request_serialization_seconds": 5.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1235,
+          "completion_tokens": 378,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 385,
+            "prompt_ms": 13431.174,
+            "prompt_per_token_ms": 34.88616623376624,
+            "prompt_per_second": 28.66465731141596,
+            "predicted_n": 378,
+            "predicted_ms": 34497.781,
+            "predicted_per_token_ms": 91.50605039787798,
+            "predicted_per_second": 10.928239123554063
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 39.1706,
+          "request_serialization_seconds": 4.2e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1453,
+          "completion_tokens": 192,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 603,
+            "prompt_ms": 21437.538,
+            "prompt_per_token_ms": 35.55147263681592,
+            "prompt_per_second": 28.128230023428998,
+            "predicted_n": 192,
+            "predicted_ms": 17725.363,
+            "predicted_per_token_ms": 92.80294764397907,
+            "predicted_per_second": 10.775519801766542
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 72.1687,
+          "request_serialization_seconds": 4.2e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1453,
+          "completion_tokens": 530,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 864,
+            "prompt_n": 589,
+            "prompt_ms": 20910.274,
+            "prompt_per_token_ms": 35.50131409168082,
+            "prompt_per_second": 28.167971400087822,
+            "predicted_n": 530,
+            "predicted_ms": 51233.224,
+            "predicted_per_token_ms": 96.84919470699434,
+            "predicted_per_second": 10.32533107813008
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 1.488,
+      "wall_seconds": 160.789,
+      "model_round_trip_seconds": 159.299
+    },
+    {
+      "task_id": "task_07_edge_case_robust_semver_comparator",
+      "evaluation_mode": "python_test_execution",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "Traceback (most recent call last): File \"/tmp/aura_sandbox_icp2oamu/test_runner.py\", line 30, in <module> print(compare_semver(\"1.0.0-alpha\", \"1.0.0\")) # -1 ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^ File \"/tmp/aura_sandbox_icp2oamu/test_runner.py\", line 19, in compare_semver if v1_parsed < v2_parsed: ^^^^^^^^^^^^^^^^^^^^^ TypeError: '<' not supported between instances of 'str' and 'NoneType' 0 -1 1",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_build_metadata_ignored (__main__.TestSemVer.test_build_metadata_ignored) ... ERROR test_invalid_formats (__main__.TestSemVer.test_invalid_formats) ... ERROR test_numeric_comparison (__main__.TestSemVer.test_numeric_comparison) ... FAIL test_prerelease_identifiers (__main__.TestSemVer.test_prerelease_identifiers) ... ERROR test_prerelease_vs_release (__main__.TestSemVer.test_prerelease_vs_release) ... ERROR ====================================================================== ERROR: test_build_metadata_ignored (__main__.TestSemVer.test_build_metadata_ignored) -----------------------------",
+          "elapsed_s": 0.082
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "Traceback (most recent call last): File \"/tmp/aura_sandbox_icp2oamu/test_runner.py\", line 30, in <module> print(compare_semver(\"1.0.0-alpha\", \"1.0.0\")) # -1 ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^ File \"/tmp/aura_sandbox_icp2oamu/test_runner.py\", line 19, in compare_semver if v1_parsed < v2_parsed: ^^^^^^^^^^^^^^^^^^^^^ TypeError: '<' not supported between instances of 'str' and 'NoneType' 0 -1 1",
+          "elapsed_s": 0.051
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4354,
+      "completion_tokens": 2377,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 85.4943,
+          "request_serialization_seconds": 4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1302,
+          "completion_tokens": 727,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 853,
+            "prompt_n": 449,
+            "prompt_ms": 15961.203,
+            "prompt_per_token_ms": 35.54833630289532,
+            "prompt_per_second": 28.13071170136737,
+            "predicted_n": 727,
+            "predicted_ms": 69469.864,
+            "predicted_per_token_ms": 95.68851790633609,
+            "predicted_per_second": 10.450574654932389
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 87.6249,
+          "request_serialization_seconds": 4.2e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1518,
+          "completion_tokens": 626,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 892,
+            "prompt_n": 626,
+            "prompt_ms": 21623.72,
+            "prompt_per_token_ms": 34.54268370607029,
+            "prompt_per_second": 28.94969043254352,
+            "predicted_n": 626,
+            "predicted_ms": 65941.829,
+            "predicted_per_token_ms": 105.5069264,
+            "predicted_per_second": 9.478050722554269
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 131.1312,
+          "request_serialization_seconds": 4.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1534,
+          "completion_tokens": 1024,
+          "finish_reason": "length",
+          "server_timings": {
+            "cache_n": 890,
+            "prompt_n": 644,
+            "prompt_ms": 23702.099,
+            "prompt_per_token_ms": 36.80450155279503,
+            "prompt_per_second": 27.170589406448773,
+            "predicted_n": 1024,
+            "predicted_ms": 107368.996,
+            "predicted_per_token_ms": 104.9550303030303,
+            "predicted_per_second": 9.527890155552912
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 7.375,
+      "wall_seconds": 311.627,
+      "model_round_trip_seconds": 304.25
+    },
+    {
+      "task_id": "task_08_refactor_cyclomatic_complexity",
+      "evaluation_mode": "python_test_execution",
+      "passed": true,
+      "status": "PASS",
+      "final_error": "",
+      "repair_calls": 1,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount) ... FAIL test_invalid_cases (__main__.TestRefactoredPricing.test_invalid_cases) ... ok test_max_discount_cap (__main__.TestRefactoredPricing.test_max_discount_cap) ... FAIL test_premium_and_vip_tiers (__main__.TestRefactoredPricing.test_premium_and_vip_tiers) ... ok test_standard_client (__main__.TestRefactoredPricing.test_standard_client) ... FAIL ====================================================================== FAIL: test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount) ------------------------------",
+          "elapsed_s": 0.092
+        },
+        {
+          "status": "PASS",
+          "passed": true,
+          "error": "",
+          "elapsed_s": 0.086
+        }
+      ],
+      "model_call_count": 2,
+      "prompt_tokens": 3138,
+      "completion_tokens": 1382,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 102.4427,
+          "request_serialization_seconds": 4.6e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1456,
+          "completion_tokens": 736,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 606,
+            "prompt_ms": 23197.994,
+            "prompt_per_token_ms": 38.28051815181518,
+            "prompt_per_second": 26.122948389416777,
+            "predicted_n": 736,
+            "predicted_ms": 79208.969,
+            "predicted_per_token_ms": 107.76730476190475,
+            "predicted_per_second": 9.279252201856082
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 108.9323,
+          "request_serialization_seconds": 5.9e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1682,
+          "completion_tokens": 646,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 890,
+            "prompt_n": 792,
+            "prompt_ms": 37590.603,
+            "prompt_per_token_ms": 47.46288257575758,
+            "prompt_per_second": 21.069095380034206,
+            "predicted_n": 646,
+            "predicted_ms": 71288.086,
+            "predicted_per_token_ms": 110.52416434108527,
+            "predicted_per_second": 9.047795167343953
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 7.801,
+      "wall_seconds": 219.177,
+      "model_round_trip_seconds": 211.375
+    },
+    {
+      "task_id": "task_09_refactor_async_parallel_batcher",
+      "evaluation_mode": "python_test_execution",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL test_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok ====================================================================== FAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_nsh57muy/test_runner.py\", line 66, in test_concurrency_and_ordering asyncio.run(main()) ~~~~~~~~~~~^^^^^^^^ File \"/usr/lib/python",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL test_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok ====================================================================== FAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_2d_e2dgb/test_runner.py\", line 57, in test_concurrency_and_ordering asyncio.run(main()) ~~~~~~~~~~~^^^^^^^^ File \"/usr/lib/python",
+          "elapsed_s": 0.253
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL test_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok ====================================================================== FAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_aduk4z2m/test_runner.py\", line 66, in test_concurrency_and_ordering asyncio.run(main()) ~~~~~~~~~~~^^^^^^^^ File \"/usr/lib/python",
+          "elapsed_s": 0.156
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL test_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok ====================================================================== FAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_nsh57muy/test_runner.py\", line 66, in test_concurrency_and_ordering asyncio.run(main()) ~~~~~~~~~~~^^^^^^^^ File \"/usr/lib/python",
+          "elapsed_s": 0.146
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4259,
+      "completion_tokens": 1079,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 67.9726,
+          "request_serialization_seconds": 4.1e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1274,
+          "completion_tokens": 479,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 854,
+            "prompt_n": 420,
+            "prompt_ms": 17072.938,
+            "prompt_per_token_ms": 40.649852380952375,
+            "prompt_per_second": 24.600335337713993,
+            "predicted_n": 479,
+            "predicted_ms": 50847.242,
+            "predicted_per_token_ms": 106.37498326359832,
+            "predicted_per_second": 9.4007065319295
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 56.299,
+          "request_serialization_seconds": 4.5e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1493,
+          "completion_tokens": 300,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 643,
+            "prompt_ms": 25017.622,
+            "prompt_per_token_ms": 38.90765474339036,
+            "prompt_per_second": 25.701883256530138,
+            "predicted_n": 300,
+            "predicted_ms": 31255.067,
+            "predicted_per_token_ms": 104.5319966555184,
+            "predicted_per_second": 9.566448857716416
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 56.0754,
+          "request_serialization_seconds": 4.3e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1492,
+          "completion_tokens": 300,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 864,
+            "prompt_n": 628,
+            "prompt_ms": 25730.787,
+            "prompt_per_token_ms": 40.97259076433121,
+            "prompt_per_second": 24.40656012581349,
+            "predicted_n": 300,
+            "predicted_ms": 30318.353,
+            "predicted_per_token_ms": 101.39917391304347,
+            "predicted_per_second": 9.862013282845544
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 1.795,
+      "wall_seconds": 182.144,
+      "model_round_trip_seconds": 180.347
+    },
+    {
+      "task_id": "task_10_test_creation_bank_account",
+      "evaluation_mode": "mutation_testing",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "La suite de tests fall\u00f3 contra la implementaci\u00f3n can\u00f3nica: .EFFF ====================================================================== ERROR: test_init (__main__.TestBankAccount.test_init) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_9x5i19du/test_runner.py\", line 16, in",
+      "repair_calls": 2,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "La suite de tests fall\u00f3 contra la implementaci\u00f3n can\u00f3nica: .E.F ====================================================================== ERROR: test_init (__main__.TestBankAccount.test_init) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_5nkmclez/test_runner.py\", line 16, in",
+          "elapsed_s": 0.086,
+          "killed_mutants": 0,
+          "total_mutants": 3
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "La suite de tests fall\u00f3 contra la implementaci\u00f3n can\u00f3nica: Traceback (most recent call last): File \"/tmp/aura_sandbox_cfj_p0yn/test_runner.py\", line 84, in <module> unittest.main() ^^^^^^^^ NameError: name 'unittest' is not defined. Did you forget to import 'unittest'?",
+          "elapsed_s": 0.081,
+          "killed_mutants": 0,
+          "total_mutants": 3
+        },
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "La suite de tests fall\u00f3 contra la implementaci\u00f3n can\u00f3nica: .EFFF ====================================================================== ERROR: test_init (__main__.TestBankAccount.test_init) ---------------------------------------------------------------------- Traceback (most recent call last): File \"/tmp/aura_sandbox_9x5i19du/test_runner.py\", line 16, in",
+          "elapsed_s": 0.089,
+          "killed_mutants": 0,
+          "total_mutants": 3
+        }
+      ],
+      "model_call_count": 3,
+      "prompt_tokens": 4307,
+      "completion_tokens": 2251,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 143.0543,
+          "request_serialization_seconds": 5.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1321,
+          "completion_tokens": 1024,
+          "finish_reason": "length",
+          "server_timings": {
+            "cache_n": 850,
+            "prompt_n": 471,
+            "prompt_ms": 18797.747,
+            "prompt_per_token_ms": 39.910290870488325,
+            "prompt_per_second": 25.056194234340957,
+            "predicted_n": 1024,
+            "predicted_ms": 124227.118,
+            "predicted_per_token_ms": 121.4341329423265,
+            "predicted_per_second": 8.234916952673732
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 143.8576,
+          "request_serialization_seconds": 5.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1489,
+          "completion_tokens": 816,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 890,
+            "prompt_n": 599,
+            "prompt_ms": 27288.313,
+            "prompt_per_token_ms": 45.556449081803,
+            "prompt_per_second": 21.95078896962227,
+            "predicted_n": 816,
+            "predicted_ms": 116511.365,
+            "predicted_per_token_ms": 142.9587300613497,
+            "predicted_per_second": 6.995025764224803
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 89.3471,
+          "request_serialization_seconds": 4.7e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1497,
+          "completion_tokens": 411,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 890,
+            "prompt_n": 607,
+            "prompt_ms": 28059.995,
+            "prompt_per_token_ms": 46.227339373970345,
+            "prompt_per_second": 21.63222053318256,
+            "predicted_n": 411,
+            "predicted_ms": 61230.327,
+            "predicted_per_token_ms": 149.34226097560975,
+            "predicted_per_second": 6.696028260636269
+          },
+          "error": null
+        }
+      ],
+      "verification_seconds": 14.139,
+      "wall_seconds": 390.399,
+      "model_round_trip_seconds": 376.259
+    },
+    {
+      "task_id": "task_11_tech_explanation_gil_and_multiprocessing",
+      "evaluation_mode": "semantic_rubric_check",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "Faltan conceptos t\u00e9cnicos requeridos: ['gil/global interpreter lock', 'cpython/interprete cpython/int\u00e9rprete cpython', 'reference counting/conteo de referencias/cuenta de referencias/contador de referencias', 'cpu-bound/cpu bound/intensivo en cpu/limite de cpu/l\u00edmite de cpu/calculo intensivo/c\u00e1lculo intensivo/calculos pesados/c\u00e1lculos pesados', 'i/o-bound/io-bound/io bound/i/o bound/entrada/salida/entrada y salida/e/s/red/disco', 'pickle/serializacion/serializaci\u00f3n/serializar', 'ipc/comunicacion entre procesos/comunicaci\u00f3n entre procesos/comunicacion interproceso/inter-process communication/tu",
+      "repair_calls": 0,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "Faltan conceptos t\u00e9cnicos requeridos: ['gil/global interpreter lock', 'cpython/interprete cpython/int\u00e9rprete cpython', 'reference counting/conteo de referencias/cuenta de referencias/contador de referencias', 'cpu-bound/cpu bound/intensivo en cpu/limite de cpu/l\u00edmite de cpu/calculo intensivo/c\u00e1lculo intensivo/calculos pesados/c\u00e1lculos pesados', 'i/o-bound/io-bound/io bound/i/o bound/entrada/salida/entrada y salida/e/s/red/disco', 'pickle/serializacion/serializaci\u00f3n/serializar', 'ipc/comunicacion entre procesos/comunicaci\u00f3n entre procesos/comunicacion interproceso/inter-process communication/tu",
+          "elapsed_s": 0.0
+        }
+      ],
+      "model_call_count": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "model_calls": null,
+      "verification_seconds": 0.0,
+      "wall_seconds": 180.003,
+      "model_round_trip_seconds": null,
+      "metrics_capture_status": "Missing from original run due benchmark collector reference bug; see metrics_rechecks."
+    },
+    {
+      "task_id": "task_12_tech_explanation_sql_injection_defense",
+      "evaluation_mode": "semantic_rubric_check",
+      "passed": false,
+      "status": "FAIL",
+      "final_error": "Faltan conceptos t\u00e9cnicos requeridos: ['ast/arbol de sintaxis abstracta/\u00e1rbol de sintaxis abstracta/abstract syntax tree/arbol sintactico/\u00e1rbol sint\u00e1ctico']",
+      "repair_calls": 0,
+      "evaluation_attempts": [
+        {
+          "status": "FAIL",
+          "passed": false,
+          "error": "Faltan conceptos t\u00e9cnicos requeridos: ['ast/arbol de sintaxis abstracta/\u00e1rbol de sintaxis abstracta/abstract syntax tree/arbol sintactico/\u00e1rbol sint\u00e1ctico']",
+          "elapsed_s": 0.0
+        }
+      ],
+      "model_call_count": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "model_calls": null,
+      "verification_seconds": 0.0,
+      "wall_seconds": 145.215,
+      "model_round_trip_seconds": null,
+      "metrics_capture_status": "Missing from original run due benchmark collector reference bug; see metrics_rechecks."
+    }
+  ],
+  "metrics_rechecks": {
+    "note": "Additional runs for the two semantic tasks corrected metrics capture. These do not replace first-run task results or alter the first-run 5/12 score.",
+    "combined_model_calls": 5,
+    "combined_prompt_tokens": 8783,
+    "combined_completion_tokens": 911,
+    "combined_wall_seconds": 377.03,
+    "tasks": [
+      {
+        "task_id": "task_11_tech_explanation_gil_and_multiprocessing",
+        "passed": false,
+        "status": "FAIL",
+        "error": "Faltan conceptos t\u00e9cnicos requeridos: ['gil/global interpreter lock', 'cpython/interprete cpython/int\u00e9rprete cpython', 'reference counting/conteo de referencias/cuenta de referencias/contador de referencias', 'cpu-bound/cpu bound/intensivo en cpu/limite de cpu/l\u00edmite de cpu/calculo intensivo/c\u00e1lculo intensivo/calculos pesados/c\u00e1lculos pesados', 'i/o-bound/io-bound/io bound/i/o bound/entrada/salida/entrada y salida/e/s/red/disco', 'pickle/serializacion/serializaci\u00f3n/serializar', 'ipc/comunicacion entre procesos/comunicaci\u00f3n entre procesos/comunicacion interproceso/inter-process communication/tu",
+        "model_call_count": 4,
+        "prompt_tokens": 6797,
+        "completion_tokens": 86,
+        "model_calls": [
+          {
+            "call_index": 1,
+            "round_trip_seconds": 87.7224,
+            "request_serialization_seconds": 0.000159,
+            "max_tokens": 1024,
+            "timeout_seconds": 180,
+            "prompt_tokens": 1951,
+            "completion_tokens": 17,
+            "finish_reason": "stop",
+            "server_timings": {
+              "cache_n": 0,
+              "prompt_n": 1951,
+              "prompt_ms": 85661.376,
+              "prompt_per_token_ms": 43.906394669400306,
+              "prompt_per_second": 22.77572566660615,
+              "predicted_n": 17,
+              "predicted_ms": 1973.582,
+              "predicted_per_token_ms": 123.348875,
+              "predicted_per_second": 8.107086505653172
+            },
+            "error": null
+          },
+          {
+            "call_index": 2,
+            "round_trip_seconds": 26.047,
+            "request_serialization_seconds": 4.4e-05,
+            "max_tokens": 1024,
+            "timeout_seconds": 180,
+            "prompt_tokens": 1354,
+            "completion_tokens": 35,
+            "finish_reason": "stop",
+            "server_timings": {
+              "cache_n": 844,
+              "prompt_n": 510,
+              "prompt_ms": 22289.154,
+              "prompt_per_token_ms": 43.70422352941176,
+              "prompt_per_second": 22.881083777338524,
+              "predicted_n": 35,
+              "predicted_ms": 3723.638,
+              "predicted_per_token_ms": 109.51876470588235,
+              "predicted_per_second": 9.130855362417078
+            },
+            "error": null
+          },
+          {
+            "call_index": 3,
+            "round_trip_seconds": 61.1343,
+            "request_serialization_seconds": 9.5e-05,
+            "max_tokens": 1024,
+            "timeout_seconds": 180,
+            "prompt_tokens": 2089,
+            "completion_tokens": 17,
+            "finish_reason": "stop",
+            "server_timings": {
+              "cache_n": 844,
+              "prompt_n": 1245,
+              "prompt_ms": 58939.796,
+              "prompt_per_token_ms": 47.341201606425706,
+              "prompt_per_second": 21.123249221968802,
+              "predicted_n": 17,
+              "predicted_ms": 2180.623,
+              "predicted_per_token_ms": 136.2889375,
+              "predicted_per_second": 7.337352673983536
+            },
+            "error": null
+          },
+          {
+            "call_index": 4,
+            "round_trip_seconds": 30.0816,
+            "request_serialization_seconds": 5.2e-05,
+            "max_tokens": 512,
+            "timeout_seconds": 120,
+            "prompt_tokens": 1403,
+            "completion_tokens": 17,
+            "finish_reason": "stop",
+            "server_timings": {
+              "cache_n": 844,
+              "prompt_n": 559,
+              "prompt_ms": 27728.822,
+              "prompt_per_token_ms": 49.60433273703041,
+              "prompt_per_second": 20.1595293157423,
+              "predicted_n": 17,
+              "predicted_ms": 2309.74,
+              "predicted_per_token_ms": 144.35875,
+              "predicted_per_second": 6.927186609748284
+            },
+            "error": null
+          }
+        ],
+        "wall_seconds": 205.096,
+        "agent_total_seconds": 205.096,
+        "evaluation_seconds": 0.0001,
+        "model_round_trip_seconds": 204.985
+      },
+      {
+        "task_id": "task_12_tech_explanation_sql_injection_defense",
+        "passed": false,
+        "status": "FAIL",
+        "error": "Faltan conceptos t\u00e9cnicos requeridos: ['parametrizad/parametrizaci\u00f3n/parametrizacion/parametrizadas/parametrizado/parametrizar/parameterized', 'ast/arbol de sintaxis abstracta/\u00e1rbol de sintaxis abstracta/abstract syntax tree/arbol sintactico/\u00e1rbol sint\u00e1ctico']",
+        "model_call_count": 1,
+        "prompt_tokens": 1986,
+        "completion_tokens": 825,
+        "model_calls": [
+          {
+            "call_index": 1,
+            "round_trip_seconds": 171.9336,
+            "request_serialization_seconds": 0.000108,
+            "max_tokens": 1024,
+            "timeout_seconds": 180,
+            "prompt_tokens": 1986,
+            "completion_tokens": 825,
+            "finish_reason": "stop",
+            "server_timings": {
+              "cache_n": 844,
+              "prompt_n": 1142,
+              "prompt_ms": 51441.642,
+              "prompt_per_token_ms": 45.04522066549912,
+              "prompt_per_second": 22.19991344755286,
+              "predicted_n": 825,
+              "predicted_ms": 120476.139,
+              "predicted_per_token_ms": 146.20890655339807,
+              "predicted_per_second": 6.839528614043648
+            },
+            "error": null
+          }
+        ],
+        "wall_seconds": 171.934,
+        "agent_total_seconds": 171.934,
+        "evaluation_seconds": 0.0002,
+        "model_round_trip_seconds": 171.934
+      }
+    ]
+  }
+}

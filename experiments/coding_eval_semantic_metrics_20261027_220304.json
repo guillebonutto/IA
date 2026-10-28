@@ -1,0 +1,150 @@
+{
+  "timestamp_utc": "2026-10-28T01:03:04.418401+00:00",
+  "purpose": "Correction of incomplete metrics capture for semantic tasks 11 and 12 in the full benchmark. These are additional runs and do not replace the first-run score.",
+  "server": "127.0.0.1:8083",
+  "model": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
+  "threads": "-t 8 -tb 8",
+  "max_tokens": 1024,
+  "task_results": [
+    {
+      "task_id": "task_11_tech_explanation_gil_and_multiprocessing",
+      "passed": false,
+      "status": "FAIL",
+      "error": "Faltan conceptos t\u00e9cnicos requeridos: ['gil/global interpreter lock', 'cpython/interprete cpython/int\u00e9rprete cpython', 'reference counting/conteo de referencias/cuenta de referencias/contador de referencias', 'cpu-bound/cpu bound/intensivo en cpu/limite de cpu/l\u00edmite de cpu/calculo intensivo/c\u00e1lculo intensivo/calculos pesados/c\u00e1lculos pesados', 'i/o-bound/io-bound/io bound/i/o bound/entrada/salida/entrada y salida/e/s/red/disco', 'pickle/serializacion/serializaci\u00f3n/serializar', 'ipc/comunicacion entre procesos/comunicaci\u00f3n entre procesos/comunicacion interproceso/inter-process communication/tu",
+      "model_call_count": 4,
+      "prompt_tokens": 6797,
+      "completion_tokens": 86,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 87.7224,
+          "request_serialization_seconds": 0.000159,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1951,
+          "completion_tokens": 17,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 0,
+            "prompt_n": 1951,
+            "prompt_ms": 85661.376,
+            "prompt_per_token_ms": 43.906394669400306,
+            "prompt_per_second": 22.77572566660615,
+            "predicted_n": 17,
+            "predicted_ms": 1973.582,
+            "predicted_per_token_ms": 123.348875,
+            "predicted_per_second": 8.107086505653172
+          },
+          "error": null
+        },
+        {
+          "call_index": 2,
+          "round_trip_seconds": 26.047,
+          "request_serialization_seconds": 4.4e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1354,
+          "completion_tokens": 35,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 844,
+            "prompt_n": 510,
+            "prompt_ms": 22289.154,
+            "prompt_per_token_ms": 43.70422352941176,
+            "prompt_per_second": 22.881083777338524,
+            "predicted_n": 35,
+            "predicted_ms": 3723.638,
+            "predicted_per_token_ms": 109.51876470588235,
+            "predicted_per_second": 9.130855362417078
+          },
+          "error": null
+        },
+        {
+          "call_index": 3,
+          "round_trip_seconds": 61.1343,
+          "request_serialization_seconds": 9.5e-05,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 2089,
+          "completion_tokens": 17,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 844,
+            "prompt_n": 1245,
+            "prompt_ms": 58939.796,
+            "prompt_per_token_ms": 47.341201606425706,
+            "prompt_per_second": 21.123249221968802,
+            "predicted_n": 17,
+            "predicted_ms": 2180.623,
+            "predicted_per_token_ms": 136.2889375,
+            "predicted_per_second": 7.337352673983536
+          },
+          "error": null
+        },
+        {
+          "call_index": 4,
+          "round_trip_seconds": 30.0816,
+          "request_serialization_seconds": 5.2e-05,
+          "max_tokens": 512,
+          "timeout_seconds": 120,
+          "prompt_tokens": 1403,
+          "completion_tokens": 17,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 844,
+            "prompt_n": 559,
+            "prompt_ms": 27728.822,
+            "prompt_per_token_ms": 49.60433273703041,
+            "prompt_per_second": 20.1595293157423,
+            "predicted_n": 17,
+            "predicted_ms": 2309.74,
+            "predicted_per_token_ms": 144.35875,
+            "predicted_per_second": 6.927186609748284
+          },
+          "error": null
+        }
+      ],
+      "wall_seconds": 205.096,
+      "agent_total_seconds": 205.096,
+      "evaluation_seconds": 0.0001,
+      "model_round_trip_seconds": 204.985
+    },
+    {
+      "task_id": "task_12_tech_explanation_sql_injection_defense",
+      "passed": false,
+      "status": "FAIL",
+      "error": "Faltan conceptos t\u00e9cnicos requeridos: ['parametrizad/parametrizaci\u00f3n/parametrizacion/parametrizadas/parametrizado/parametrizar/parameterized', 'ast/arbol de sintaxis abstracta/\u00e1rbol de sintaxis abstracta/abstract syntax tree/arbol sintactico/\u00e1rbol sint\u00e1ctico']",
+      "model_call_count": 1,
+      "prompt_tokens": 1986,
+      "completion_tokens": 825,
+      "model_calls": [
+        {
+          "call_index": 1,
+          "round_trip_seconds": 171.9336,
+          "request_serialization_seconds": 0.000108,
+          "max_tokens": 1024,
+          "timeout_seconds": 180,
+          "prompt_tokens": 1986,
+          "completion_tokens": 825,
+          "finish_reason": "stop",
+          "server_timings": {
+            "cache_n": 844,
+            "prompt_n": 1142,
+            "prompt_ms": 51441.642,
+            "prompt_per_token_ms": 45.04522066549912,
+            "prompt_per_second": 22.19991344755286,
+            "predicted_n": 825,
+            "predicted_ms": 120476.139,
+            "predicted_per_token_ms": 146.20890655339807,
+            "predicted_per_second": 6.839528614043648
+          },
+          "error": null
+        }
+      ],
+      "wall_seconds": 171.934,
+      "agent_total_seconds": 171.934,
+      "evaluation_seconds": 0.0002,
+      "model_round_trip_seconds": 171.934
+    }
+  ]
+}

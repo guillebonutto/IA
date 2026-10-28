@@ -1,0 +1,348 @@
+[
+  {
+    "task_id": "train_01_trie_prefix_tree",
+    "category": "code_generation",
+    "contract": "Implementa una clase Trie (árbol de prefijos) para cadenas ASCII en minúsculas.\nMétodos requeridos:\n- __init__(): inicializa la estructura vacía.\n- insert(word: str) -> None: inserta una palabra. Si word no es str o está vacía, levanta ValueError.\n- search(word: str) -> bool: retorna True si la palabra exacta existe en el Trie.\n- starts_with(prefix: str) -> bool: retorna True si existe alguna palabra con dicho prefijo. Si prefix == '', retorna True.\n- delete(word: str) -> bool: elimina word si existe y retorna True; si no existe retorna False. Limpia nodos huérfanos sin alterar otras palabras.",
+    "input_signature": "class Trie: def insert(self, word: str) -> None; def search(self, word: str) -> bool; def starts_with(self, prefix: str) -> bool; def delete(self, word: str) -> bool",
+    "reference_solution": "class TrieNode:\n    def __init__(self):\n        self.children = {}\n        self.is_end_of_word = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n        if not isinstance(word, str) or len(word) == 0:\n            raise ValueError(\"Word must be a non-empty string\")\n        curr = self.root\n        for char in word:\n            if char not in curr.children:\n                curr.children[char] = TrieNode()\n            curr = curr.children[char]\n        curr.is_end_of_word = True\n\n    def search(self, word: str) -> bool:\n        if not isinstance(word, str) or len(word) == 0:\n            return False\n        curr = self.root\n        for char in word:\n            if char not in curr.children:\n                return False\n            curr = curr.children[char]\n        return curr.is_end_of_word\n\n    def starts_with(self, prefix: str) -> bool:\n        if not isinstance(prefix, str):\n            raise TypeError(\"Prefix must be a string\")\n        if len(prefix) == 0:\n            return True\n        curr = self.root\n        for char in prefix:\n            if char not in curr.children:\n                return False\n            curr = curr.children[char]\n        return True\n\n    def delete(self, word: str) -> bool:\n        if not isinstance(word, str) or len(word) == 0:\n            return False\n\n        def _delete_helper(curr, w, depth):\n            if depth == len(w):\n                if not curr.is_end_of_word:\n                    return False\n                curr.is_end_of_word = False\n                return len(curr.children) == 0\n            char = w[depth]\n            if char not in curr.children:\n                return False\n            should_delete_child = _delete_helper(curr.children[char], w, depth + 1)\n            if should_delete_child:\n                del curr.children[char]\n                return len(curr.children) == 0 and not curr.is_end_of_word\n            return False\n\n        if not self.search(word):\n            return False\n        _delete_helper(self.root, word, 0)\n        return True\n",
+    "edge_cases": [
+      "Inserción de cadena vacía levanta ValueError",
+      "starts_with con prefijo vacío retorna True",
+      "delete de palabra inexistente retorna False",
+      "delete de palabra que es prefijo de otra no borra la palabra más larga",
+      "delete de palabra más larga no borra el prefijo compartido"
+    ],
+    "tests": "import unittest\n\nclass TestTrie(unittest.TestCase):\n    def test_insert_and_search(self):\n        t = Trie()\n        t.insert(\"apple\")\n        self.assertTrue(t.search(\"apple\"))\n        self.assertFalse(t.search(\"app\"))\n        self.assertTrue(t.starts_with(\"app\"))\n        t.insert(\"app\")\n        self.assertTrue(t.search(\"app\"))\n\n    def test_empty_string_insert_raises(self):\n        t = Trie()\n        with self.assertRaises(ValueError):\n            t.insert(\"\")\n\n    def test_starts_with_empty(self):\n        t = Trie()\n        t.insert(\"cat\")\n        self.assertTrue(t.starts_with(\"\"))\n\n    def test_delete(self):\n        t = Trie()\n        t.insert(\"apple\")\n        t.insert(\"app\")\n        self.assertTrue(t.delete(\"app\"))\n        self.assertFalse(t.search(\"app\"))\n        self.assertTrue(t.search(\"apple\"))\n        self.assertFalse(t.delete(\"banana\"))\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:14Z"
+  },
+  {
+    "task_id": "train_02_min_heap_priority_queue",
+    "category": "code_generation",
+    "contract": "Implementa una cola de prioridad basada en Min-Heap desde cero sin usar heapq.\nMétodos requeridos:\n- __init__(): crea el heap vacío.\n- push(val: int | float) -> None: inserta un valor numérico. Si no es numérico, levanta TypeError.\n- pop_min() -> int | float: extrae y retorna el elemento mínimo en O(log N). Si está vacío, levanta IndexError.\n- peek() -> int | float: consulta el mínimo en O(1) sin extraerlo. Si está vacío, levanta IndexError.\n- __len__() -> int: retorna la cantidad de elementos.",
+    "input_signature": "class MinHeap: def push(self, val: int | float) -> None; def pop_min(self) -> int | float; def peek(self) -> int | float; def __len__(self) -> int",
+    "reference_solution": "class MinHeap:\n    def __init__(self):\n        self._heap = []\n\n    def __len__(self) -> int:\n        return len(self._heap)\n\n    def peek(self):\n        if not self._heap:\n            raise IndexError(\"peek from empty heap\")\n        return self._heap[0]\n\n    def push(self, val):\n        if not isinstance(val, (int, float)):\n            raise TypeError(\"Heap elements must be numeric\")\n        self._heap.append(val)\n        self._sift_up(len(self._heap) - 1)\n\n    def pop_min(self):\n        if not self._heap:\n            raise IndexError(\"pop from empty heap\")\n        if len(self._heap) == 1:\n            return self._heap.pop()\n        min_val = self._heap[0]\n        self._heap[0] = self._heap.pop()\n        self._sift_down(0)\n        return min_val\n\n    def _sift_up(self, idx):\n        parent = (idx - 1) // 2\n        while idx > 0 and self._heap[idx] < self._heap[parent]:\n            self._heap[idx], self._heap[parent] = self._heap[parent], self._heap[idx]\n            idx = parent\n            parent = (idx - 1) // 2\n\n    def _sift_down(self, idx):\n        n = len(self._heap)\n        while True:\n            smallest = idx\n            left = 2 * idx + 1\n            right = 2 * idx + 2\n            if left < n and self._heap[left] < self._heap[smallest]:\n                smallest = left\n            if right < n and self._heap[right] < self._heap[smallest]:\n                smallest = right\n            if smallest != idx:\n                self._heap[idx], self._heap[smallest] = self._heap[smallest], self._heap[idx]\n                idx = smallest\n            else:\n                break\n",
+    "edge_cases": [
+      "Extracción o peek sobre heap vacío levanta IndexError",
+      "push de tipos no numéricos levanta TypeError",
+      "Inserción y extracción con duplicados mantiene orden min-heap",
+      "Preservación de propiedad de heap tras múltiples extracciones"
+    ],
+    "tests": "import unittest\n\nclass TestMinHeap(unittest.TestCase):\n    def test_push_and_pop_order(self):\n        h = MinHeap()\n        for x in [5, 3, 8, 1, 2]:\n            h.push(x)\n        self.assertEqual(len(h), 5)\n        self.assertEqual(h.peek(), 1)\n        res = [h.pop_min() for _ in range(5)]\n        self.assertEqual(res, [1, 2, 3, 5, 8])\n\n    def test_empty_heap_raises(self):\n        h = MinHeap()\n        with self.assertRaises(IndexError):\n            h.pop_min()\n        with self.assertRaises(IndexError):\n            h.peek()\n\n    def test_invalid_type_raises(self):\n        h = MinHeap()\n        with self.assertRaises(TypeError):\n            h.push(\"string\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:15Z"
+  },
+  {
+    "task_id": "train_03_stream_median_calculator",
+    "category": "code_generation",
+    "contract": "Implementa una clase MedianFinder para calcular en O(1) la mediana de un flujo de datos continuo.\nMétodos requeridos:\n- add_num(num: int | float) -> None: agrega un número al flujo. Levanta TypeError si no es numérico.\n- find_median() -> float: retorna la mediana actual como float. Si no hay números, levanta ValueError.\n- Si el número de elementos es impar, retorna el elemento central.\n- Si es par, retorna el promedio aritmético de los dos centrales.",
+    "input_signature": "class MedianFinder: def add_num(self, num: int | float) -> None; def find_median(self) -> float",
+    "reference_solution": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        self.small = []  # max-heap (invertido)\n        self.large = []  # min-heap\n\n    def add_num(self, num: int | float) -> None:\n        if not isinstance(num, (int, float)):\n            raise TypeError(\"Number must be an int or float\")\n        heapq.heappush(self.small, -num)\n\n        # Asegurar que todo elemento en small <= todo elemento en large\n        if self.small and self.large and (-self.small[0] > self.large[0]):\n            val = -heapq.heappop(self.small)\n            heapq.heappush(self.large, val)\n\n        # Balance de tamano: len(small) == len(large) o len(small) == len(large) + 1\n        if len(self.small) > len(self.large) + 1:\n            val = -heapq.heappop(self.small)\n            heapq.heappush(self.large, val)\n        elif len(self.large) > len(self.small):\n            val = heapq.heappop(self.large)\n            heapq.heappush(self.small, -val)\n\n    def find_median(self) -> float:\n        if not self.small and not self.large:\n            raise ValueError(\"No numbers in stream\")\n        if len(self.small) > len(self.large):\n            return float(-self.small[0])\n        return float((-self.small[0] + self.large[0]) / 2.0)\n",
+    "edge_cases": [
+      "find_median en flujo vacío levanta ValueError",
+      "add_num con tipos no numéricos levanta TypeError",
+      "Manejo de flujo con números negativos y decimales",
+      "Equilibrio de paridad con cantidad par e impar de elementos"
+    ],
+    "tests": "import unittest\n\nclass TestMedianFinder(unittest.TestCase):\n    def test_running_median(self):\n        mf = MedianFinder()\n        mf.add_num(1)\n        self.assertEqual(mf.find_median(), 1.0)\n        mf.add_num(2)\n        self.assertEqual(mf.find_median(), 1.5)\n        mf.add_num(3)\n        self.assertEqual(mf.find_median(), 2.0)\n\n    def test_empty_raises(self):\n        mf = MedianFinder()\n        with self.assertRaises(ValueError):\n            mf.find_median()\n\n    def test_invalid_type_raises(self):\n        mf = MedianFinder()\n        with self.assertRaises(TypeError):\n            mf.add_num(\"abc\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:16Z"
+  },
+  {
+    "task_id": "train_04_matrix_rotation_90deg",
+    "category": "code_generation",
+    "contract": "Implementa rotate_matrix_90_clockwise(matrix: list[list[int]]) -> None que rote una matriz cuadrada N x N 90 grados en sentido horario in-place.\nValidaciones:\n- Si matrix no es list de listas o algún elemento no es int/float, levantar TypeError.\n- Si matrix es [] se considera válida sin cambios.\n- Si la matriz no es cuadrada (distinto número de filas y columnas), levantar ValueError('Matrix must be square').",
+    "input_signature": "def rotate_matrix_90_clockwise(matrix: list[list[int]]) -> None",
+    "reference_solution": "def rotate_matrix_90_clockwise(matrix: list[list[int]]) -> None:\n    if not isinstance(matrix, list):\n        raise TypeError(\"Matrix must be a list\")\n    if not matrix:\n        return\n    n = len(matrix)\n    for row in matrix:\n        if not isinstance(row, list):\n            raise TypeError(\"Rows must be lists\")\n        if len(row) != n:\n            raise ValueError(\"Matrix must be square\")\n        for val in row:\n            if not isinstance(val, (int, float)):\n                raise TypeError(\"Elements must be numbers\")\n\n    # Transposicion\n    for i in range(n):\n        for j in range(i + 1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n\n    # Inversion de cada fila\n    for i in range(n):\n        matrix[i].reverse()\n",
+    "edge_cases": [
+      "Matriz vacía [] no produce error",
+      "Matriz 1x1 permanece idéntica",
+      "Matriz no cuadrada (2x3) levanta ValueError",
+      "Tipos inválidos levantan TypeError",
+      "Modificación estricta in-place (misma referencia de lista)"
+    ],
+    "tests": "import unittest\n\nclass TestRotateMatrix(unittest.TestCase):\n    def test_square_3x3(self):\n        m = [\n            [1, 2, 3],\n            [4, 5, 6],\n            [7, 8, 9]\n        ]\n        rotate_matrix_90_clockwise(m)\n        self.assertEqual(m, [\n            [7, 4, 1],\n            [8, 5, 2],\n            [9, 6, 3]\n        ])\n\n    def test_non_square_raises(self):\n        m = [[1, 2, 3], [4, 5, 6]]\n        with self.assertRaises(ValueError):\n            rotate_matrix_90_clockwise(m)\n\n    def test_invalid_type_raises(self):\n        with self.assertRaises(TypeError):\n            rotate_matrix_90_clockwise([[1, \"x\"], [3, 4]])\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:16Z"
+  },
+  {
+    "task_id": "train_05_interval_disjoint_intersection",
+    "category": "code_generation",
+    "contract": "Implementa intersect_interval_lists(first_list: list[list[int]], second_list: list[list[int]]) -> list[list[int]].\nDadas dos listas de intervalos cerrados [start, end] ordenadas y disjuntas cada una, retorna su intersección por pares.\nValidaciones:\n- Si first_list o second_list no son listas, o algún límite de intervalo no es entero, levantar TypeError.\n- Si algún intervalo no es una secuencia de 2 elementos o start > end, levantar ValueError.\n- Si una de las listas es vacía, retornar [].\n- Retornar una nueva lista con los intervalos de intersección resultantes.",
+    "input_signature": "def intersect_interval_lists(first_list: list[list[int]], second_list: list[list[int]]) -> list[list[int]]",
+    "reference_solution": "def intersect_interval_lists(first_list: list[list[int]], second_list: list[list[int]]) -> list[list[int]]:\n    if not isinstance(first_list, list) or not isinstance(second_list, list):\n        raise TypeError(\"Inputs must be lists\")\n\n    def _validate(lst):\n        for item in lst:\n            if not isinstance(item, (list, tuple)) or len(item) != 2:\n                raise ValueError(\"Interval must be a 2-element sequence\")\n            s, e = item\n            if not isinstance(s, int) or not isinstance(e, int):\n                raise TypeError(\"Interval bounds must be integers\")\n            if s > e:\n                raise ValueError(f\"Invalid interval: start {s} > end {e}\")\n\n    _validate(first_list)\n    _validate(second_list)\n\n    i, j = 0, 0\n    res = []\n    while i < len(first_list) and j < len(second_list):\n        s1, e1 = first_list[i]\n        s2, e2 = second_list[j]\n\n        start = max(s1, s2)\n        end = min(e1, e2)\n\n        if start <= end:\n            res.append([start, end])\n\n        if e1 < e2:\n            i += 1\n        else:\n            j += 1\n    return res\n",
+    "edge_cases": [
+      "Listas vacías retornan []",
+      "Intervalos con start > end levantan ValueError",
+      "Intersección puntual [a, a] permitida",
+      "Sin solapamiento retorna []",
+      "Entradas no listas o límites no enteros levantan TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestIntervalIntersection(unittest.TestCase):\n    def test_standard_intersection(self):\n        a = [[0, 2], [5, 10], [13, 23], [24, 25]]\n        b = [[1, 5], [8, 12], [15, 24], [25, 26]]\n        self.assertEqual(\n            intersect_interval_lists(a, b),\n            [[1, 2], [5, 5], [8, 10], [15, 23], [24, 24], [25, 25]]\n        )\n\n    def test_empty_lists(self):\n        self.assertEqual(intersect_interval_lists([], [[1, 2]]), [])\n\n    def test_invalid_interval_raises(self):\n        with self.assertRaises(ValueError):\n            intersect_interval_lists([[5, 2]], [[1, 3]])\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:17Z"
+  },
+  {
+    "task_id": "train_06_string_run_length_encoding",
+    "category": "code_generation",
+    "contract": "Implementa dos funciones puras: rle_encode(text: str) -> str y rle_decode(encoded: str) -> str.\nReglas de codificación:\n- 'AABBBCCCC' -> 'A2B3C4'\n- Si un carácter aparece una sola vez: 'AB' -> 'A1B1'\n- rle_encode('') -> ''\n- rle_decode('') -> ''\n- Si encoded en rle_decode tiene formato inválido (sin dígito tras letra o caracteres ilegales), levantar ValueError.\n- Si text no es str, levantar TypeError.",
+    "input_signature": "def rle_encode(text: str) -> str; def rle_decode(encoded: str) -> str",
+    "reference_solution": "import re\n\ndef rle_encode(text: str) -> str:\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a string\")\n    if not text:\n        return \"\"\n    res = []\n    curr_char = text[0]\n    count = 1\n    for char in text[1:]:\n        if char == curr_char:\n            count += 1\n        else:\n            res.append(f\"{curr_char}{count}\")\n            curr_char = char\n            count = 1\n    res.append(f\"{curr_char}{count}\")\n    return \"\".join(res)\n\ndef rle_decode(encoded: str) -> str:\n    if not isinstance(encoded, str):\n        raise TypeError(\"encoded must be a string\")\n    if not encoded:\n        return \"\"\n    # Formato estricto: pares (caracter no digito)(uno o mas digitos)\n    pattern = re.compile(r\"^([^0-9]\\d+)+$\")\n    if not pattern.match(encoded):\n        raise ValueError(\"Invalid RLE encoded format\")\n    tokens = re.findall(r\"([^0-9])(\\d+)\", encoded)\n    res = []\n    for char, count_str in tokens:\n        count = int(count_str)\n        if count <= 0:\n            raise ValueError(\"Count must be positive\")\n        res.append(char * count)\n    return \"\".join(res)\n",
+    "edge_cases": [
+      "Cadena vacía retorna cadena vacía en ambas funciones",
+      "Entradas no str levantan TypeError",
+      "Formato corrupto en decode (ej. 'A2B') levanta ValueError",
+      "Conteo mayor a 9 dígitos (ej. 'A12') se decodifica como 12 letras 'A'"
+    ],
+    "tests": "import unittest\n\nclass TestRLE(unittest.TestCase):\n    def test_roundtrip(self):\n        s = \"WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWB\"\n        enc = rle_encode(s)\n        self.assertEqual(rle_decode(enc), s)\n\n    def test_empty(self):\n        self.assertEqual(rle_encode(\"\"), \"\")\n        self.assertEqual(rle_decode(\"\"), \"\")\n\n    def test_invalid_decode_format_raises(self):\n        with self.assertRaises(ValueError):\n            rle_decode(\"A\")\n        with self.assertRaises(ValueError):\n            rle_decode(\"12A\")\n\n    def test_invalid_type_raises(self):\n        with self.assertRaises(TypeError):\n            rle_encode(123)\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:17Z"
+  },
+  {
+    "task_id": "train_07_debug_generator_pipeline",
+    "category": "debugging",
+    "contract": "Corrige una función generadora batch_stream(iterable, batch_size: int) que agrupa elementos en lotes.\nRequisitos obligatorios:\n- Si batch_size <= 0 levantar ValueError.\n- Funcionar con iteradores de un solo uso (generadores infinitos o cerrados) sin consumirlos por completo en memoria.\n- El último lote puede tener longitud menor a batch_size si se agota el iterable.",
+    "input_signature": "def batch_stream(iterable, batch_size: int)",
+    "reference_solution": "import itertools\n\ndef batch_stream(iterable, batch_size: int):\n    if not isinstance(batch_size, int) or batch_size <= 0:\n        raise ValueError(\"batch_size must be an integer greater than 0\")\n    \n    it = iter(iterable)\n    while True:\n        batch = list(itertools.islice(it, batch_size))\n        if not batch:\n            break\n        yield batch\n",
+    "edge_cases": [
+      "batch_size <= 0 levanta ValueError",
+      "iterable vacío produce 0 lotes",
+      "iterable que no es divisible exacto por batch_size emite el residuo como último lote",
+      "iteradores perezosos (ej. map o generador) no son forzados a list()"
+    ],
+    "tests": "import unittest\n\nclass TestBatchStream(unittest.TestCase):\n    def test_exact_and_partial_batches(self):\n        res = list(batch_stream(range(7), batch_size=3))\n        self.assertEqual(res, [[0, 1, 2], [3, 4, 5], [6]])\n\n    def test_empty_iterable(self):\n        res = list(batch_stream([], batch_size=2))\n        self.assertEqual(res, [])\n\n    def test_invalid_batch_size_raises(self):\n        with self.assertRaises(ValueError):\n            list(batch_stream([1, 2], batch_size=0))\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:18Z"
+  },
+  {
+    "task_id": "train_08_debug_binary_search_rotated",
+    "category": "debugging",
+    "contract": "Corrige search_rotated_sorted_array(nums: list[int], target: int) -> int que busca target en un arreglo ordenado rotado en O(log N).\nRequisitos:\n- Retorna el índice de target si existe, o -1 si no existe.\n- Si nums está vacío retorna -1.\n- Si nums no es list o target no es int, levantar TypeError.",
+    "input_signature": "def search_rotated_sorted_array(nums: list[int], target: int) -> int",
+    "reference_solution": "def search_rotated_sorted_array(nums: list[int], target: int) -> int:\n    if not isinstance(nums, list):\n        raise TypeError(\"nums must be a list\")\n    if not isinstance(target, int):\n        raise TypeError(\"target must be an integer\")\n    if not nums:\n        return -1\n    for x in nums:\n        if not isinstance(x, int):\n            raise TypeError(\"All elements must be integers\")\n\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n\n        # Mitad izquierda ordenada\n        if nums[left] <= nums[mid]:\n            if nums[left] <= target < nums[mid]:\n                right = mid - 1\n            else:\n                left = mid + 1\n        # Mitad derecha ordenada\n        else:\n            if nums[mid] < target <= nums[right]:\n                left = mid + 1\n            else:\n                right = mid - 1\n    return -1\n",
+    "edge_cases": [
+      "Lista vacía retorna -1",
+      "Target en el punto de rotación o en los extremos",
+      "Lista de tamaño 1 y 2",
+      "Tipos no numéricos levantan TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestSearchRotated(unittest.TestCase):\n    def test_found_elements(self):\n        nums = [4, 5, 6, 7, 0, 1, 2]\n        self.assertEqual(search_rotated_sorted_array(nums, 0), 4)\n        self.assertEqual(search_rotated_sorted_array(nums, 4), 0)\n        self.assertEqual(search_rotated_sorted_array(nums, 2), 6)\n\n    def test_not_found(self):\n        nums = [4, 5, 6, 7, 0, 1, 2]\n        self.assertEqual(search_rotated_sorted_array(nums, 3), -1)\n        self.assertEqual(search_rotated_sorted_array([], 1), -1)\n\n    def test_invalid_type_raises(self):\n        with self.assertRaises(TypeError):\n            search_rotated_sorted_array([1, 2], \"3\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:18Z"
+  },
+  {
+    "task_id": "train_09_debug_linked_list_cycle_detection",
+    "category": "debugging",
+    "contract": "Dada la clase ListNode(val, next=None), implementa detect_cycle_start(head: ListNode | None) -> ListNode | None.\nRequisitos:\n- Si existe un ciclo en la lista enlazada, retorna el nodo exacto donde comienza el ciclo usando el algoritmo de Floyd en O(1) memoria auxiliar.\n- Si no existe ciclo o head es None, retorna None.\n- Si head no es ListNode ni None, levantar TypeError.",
+    "input_signature": "class ListNode: def __init__(self, val, next=None); def detect_cycle_start(head: ListNode | None) -> ListNode | None",
+    "reference_solution": "class ListNode:\n    def __init__(self, val, next=None):\n        self.val = val\n        self.next = next\n\ndef detect_cycle_start(head: ListNode | None) -> ListNode | None:\n    if head is None:\n        return None\n    if not isinstance(head, ListNode):\n        raise TypeError(\"head must be a ListNode or None\")\n\n    slow = head\n    fast = head\n\n    # Fase 1: Encontrar punto de encuentro\n    has_cycle = False\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            has_cycle = True\n            break\n\n    if not has_cycle:\n        return None\n\n    # Fase 2: Encontrar el nodo de inicio del ciclo\n    ptr1 = head\n    ptr2 = slow\n    while ptr1 is not ptr2:\n        ptr1 = ptr1.next\n        ptr2 = ptr2.next\n\n    return ptr1\n",
+    "edge_cases": [
+      "head is None retorna None",
+      "Lista con un solo nodo sin ciclo retorna None",
+      "Lista con un solo nodo apuntando a sí mismo retorna ese nodo",
+      "Lista con ciclo largo en la mitad retorna el nodo de entrada exacto"
+    ],
+    "tests": "import unittest\n\nclass TestLinkedListCycle(unittest.TestCase):\n    def test_cycle_present(self):\n        n1 = ListNode(3)\n        n2 = ListNode(2)\n        n3 = ListNode(0)\n        n4 = ListNode(-4)\n        n1.next = n2\n        n2.next = n3\n        n3.next = n4\n        n4.next = n2  # Ciclo que inicia en n2\n        self.assertIs(detect_cycle_start(n1), n2)\n\n    def test_no_cycle(self):\n        n1 = ListNode(1)\n        n2 = ListNode(2)\n        n1.next = n2\n        self.assertIsNone(detect_cycle_start(n1))\n        self.assertIsNone(detect_cycle_start(None))\n\n    def test_invalid_type_raises(self):\n        with self.assertRaises(TypeError):\n            detect_cycle_start(\"not a node\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:19Z"
+  },
+  {
+    "task_id": "train_10_debug_event_emitter_leak",
+    "category": "debugging",
+    "contract": "Implementa una clase EventEmitter con manejo seguro de suscripciones.\nMétodos requeridos:\n- on(event: str, listener: callable) -> callable: suscribe un callback y retorna una función 'unsubscribe' sin argumentos.\n- emit(event: str, *args, **kwargs) -> int: ejecuta todos los listeners en orden de registro y retorna el total ejecutado.\n- once(event: str, listener: callable) -> None: suscribe un listener que se ejecuta a lo sumo una vez y se remueve automáticamente.\n- remove_listener(event: str, listener: callable) -> bool: remueve el listener indicado y retorna True si existía, False si no.",
+    "input_signature": "class EventEmitter: def on(self, event: str, listener) -> callable; def emit(self, event: str, *args, **kwargs) -> int; def once(self, event: str, listener) -> None; def remove_listener(self, event: str, listener) -> bool",
+    "reference_solution": "class EventEmitter:\n    def __init__(self):\n        self._events = {}\n\n    def on(self, event: str, listener):\n        if not callable(listener):\n            raise TypeError(\"Listener must be callable\")\n        if event not in self._events:\n            self._events[event] = []\n        self._events[event].append(listener)\n\n        unsubscribed = False\n        def unsubscribe():\n            nonlocal unsubscribed\n            if not unsubscribed:\n                unsubscribed = True\n                self.remove_listener(event, listener)\n        return unsubscribe\n\n    def once(self, event: str, listener):\n        if not callable(listener):\n            raise TypeError(\"Listener must be callable\")\n        def wrapper(*args, **kwargs):\n            self.remove_listener(event, wrapper)\n            return listener(*args, **kwargs)\n        self.on(event, wrapper)\n\n    def remove_listener(self, event: str, listener) -> bool:\n        if event in self._events and listener in self._events[event]:\n            self._events[event].remove(listener)\n            return True\n        return False\n\n    def emit(self, event: str, *args, **kwargs) -> int:\n        if event not in self._events or not self._events[event]:\n            return 0\n        listeners = list(self._events[event])\n        count = 0\n        for l in listeners:\n            l(*args, **kwargs)\n            count += 1\n        return count\n",
+    "edge_cases": [
+      "Emit de evento sin listeners retorna 0",
+      "Llamar a unsubscribe varias veces es idempotente",
+      "Listener once se auto-desuscribe tras la primera emisión",
+      "Modificar listeners durante emit no causa RuntimeError de mutación de colección"
+    ],
+    "tests": "import unittest\n\nclass TestEventEmitter(unittest.TestCase):\n    def test_on_and_emit(self):\n        ee = EventEmitter()\n        calls = []\n        unsub = ee.on(\"data\", lambda x: calls.append(x))\n        ee.emit(\"data\", 10)\n        self.assertEqual(calls, [10])\n        unsub()\n        ee.emit(\"data\", 20)\n        self.assertEqual(calls, [10])\n\n    def test_once(self):\n        ee = EventEmitter()\n        calls = []\n        ee.once(\"login\", lambda u: calls.append(u))\n        ee.emit(\"login\", \"alice\")\n        ee.emit(\"login\", \"bob\")\n        self.assertEqual(calls, [\"alice\"])\n\n    def test_invalid_listener_raises(self):\n        ee = EventEmitter()\n        with self.assertRaises(TypeError):\n            ee.on(\"test\", \"not a callable\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:19Z"
+  },
+  {
+    "task_id": "train_11_disjoint_set_union_find",
+    "category": "data_structures",
+    "contract": "Implementa una estructura DisjointSetUnion (Union-Find) con compresión de caminos y unión por rango.\nMétodos requeridos:\n- __init__(n: int): inicializa elementos numerados 0 a n-1. Si n <= 0, levanta ValueError.\n- find(x: int) -> int: encuentra el representante de x con compresión de camino. Si x fuera de rango, levanta IndexError.\n- union(x: int, y: int) -> bool: une los conjuntos de x e y por rango. Retorna True si se unieron dos componentes distintas, False si ya pertenecían al mismo conjunto.\n- count_components() -> int: retorna la cantidad actual de componentes disjuntas.",
+    "input_signature": "class DisjointSetUnion: def find(self, x: int) -> int; def union(self, x: int, y: int) -> bool; def count_components(self) -> int",
+    "reference_solution": "class DisjointSetUnion:\n    def __init__(self, n: int):\n        if not isinstance(n, int) or n <= 0:\n            raise ValueError(\"n must be a positive integer\")\n        self.n = n\n        self.parent = list(range(n))\n        self.rank = [0] * n\n        self.components = n\n\n    def find(self, x: int) -> int:\n        if not isinstance(x, int) or x < 0 or x >= self.n:\n            raise IndexError(\"Index out of bounds\")\n        root = x\n        while root != self.parent[root]:\n            root = self.parent[root]\n        # Compresion de camino\n        curr = x\n        while curr != root:\n            nxt = self.parent[curr]\n            self.parent[curr] = root\n            curr = nxt\n        return root\n\n    def union(self, x: int, y: int) -> bool:\n        root_x = self.find(x)\n        root_y = self.find(y)\n        if root_x == root_y:\n            return False\n\n        if self.rank[root_x] < self.rank[root_y]:\n            self.parent[root_x] = root_y\n        elif self.rank[root_x] > self.rank[root_y]:\n            self.parent[root_y] = root_x\n        else:\n            self.parent[root_y] = root_x\n            self.rank[root_x] += 1\n\n        self.components -= 1\n        return True\n\n    def count_components(self) -> int:\n        return self.components\n",
+    "edge_cases": [
+      "n <= 0 levanta ValueError",
+      "find o union con índices negativos o >= n levantan IndexError",
+      "union entre elementos ya conectados retorna False y no altera componentes",
+      "count_components disminuye exactamente en 1 por cada unión exitosa"
+    ],
+    "tests": "import unittest\n\nclass TestDSU(unittest.TestCase):\n    def test_unions_and_components(self):\n        dsu = DisjointSetUnion(5)\n        self.assertEqual(dsu.count_components(), 5)\n        self.assertTrue(dsu.union(0, 1))\n        self.assertTrue(dsu.union(1, 2))\n        self.assertEqual(dsu.count_components(), 3)\n        self.assertFalse(dsu.union(0, 2))  # Ya conectados\n        self.assertEqual(dsu.find(0), dsu.find(2))\n\n    def test_invalid_n_raises(self):\n        with self.assertRaises(ValueError):\n            DisjointSetUnion(0)\n\n    def test_out_of_bounds_raises(self):\n        dsu = DisjointSetUnion(3)\n        with self.assertRaises(IndexError):\n            dsu.find(5)\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:20Z"
+  },
+  {
+    "task_id": "train_12_monotonic_stack_next_greater",
+    "category": "data_structures",
+    "contract": "Implementa next_greater_elements(nums: list[int]) -> list[int] usando una pila monótona.\nRequisitos:\n- Para cada índice i, encuentra el primer elemento a la derecha estrictamente mayor que nums[i].\n- Si no existe ningún elemento mayor a la derecha, coloca -1.\n- Si nums es [], retorna [].\n- Si nums no es list o algún elemento no es int, levantar TypeError.",
+    "input_signature": "def next_greater_elements(nums: list[int]) -> list[int]",
+    "reference_solution": "def next_greater_elements(nums: list[int]) -> list[int]:\n    if not isinstance(nums, list):\n        raise TypeError(\"nums must be a list\")\n    for x in nums:\n        if not isinstance(x, int):\n            raise TypeError(\"All elements must be integers\")\n    if not nums:\n        return []\n\n    n = len(nums)\n    res = [-1] * n\n    stack = []  # indices con valores decrecientes\n\n    for i in range(n):\n        while stack and nums[i] > nums[stack[-1]]:\n            idx = stack.pop()\n            res[idx] = nums[i]\n        stack.append(i)\n\n    return res\n",
+    "edge_cases": [
+      "Lista vacía retorna []",
+      "Elementos con valores decrecientes retornan todos -1",
+      "Elementos duplicados solo consideran estrictamente mayor (>)",
+      "Validación estricta de tipos levanta TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestNextGreater(unittest.TestCase):\n    def test_standard_cases(self):\n        self.assertEqual(next_greater_elements([2, 1, 2, 4, 3]), [4, 2, 4, -1, -1])\n        self.assertEqual(next_greater_elements([5, 4, 3, 2, 1]), [-1, -1, -1, -1, -1])\n\n    def test_empty(self):\n        self.assertEqual(next_greater_elements([]), [])\n\n    def test_invalid_type_raises(self):\n        with self.assertRaises(TypeError):\n            next_greater_elements([1, \"2\", 3])\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:21Z"
+  },
+  {
+    "task_id": "train_13_lfu_cache_frequency_bucket",
+    "category": "data_structures",
+    "contract": "Implementa una caché LFU (Least Frequently Used) con operaciones get y put en O(1).\nRequisitos:\n- __init__(capacity: int): capacidad máxima. Si capacity <= 0 levanta ValueError.\n- get(key: int) -> int: retorna el valor si existe e incrementa su frecuencia; si no existe, retorna -1.\n- put(key: int, value: int) -> None: inserta o actualiza el valor e incrementa su frecuencia. Si excede la capacidad, desaloja la clave con menor frecuencia. En caso de empate de frecuencia, desaloja la menos recientemente usada (LRU).",
+    "input_signature": "class LFUCache: def __init__(self, capacity: int); def get(self, key: int) -> int; def put(self, key: int, value: int) -> None",
+    "reference_solution": "from collections import defaultdict, OrderedDict\n\nclass LFUCache:\n    def __init__(self, capacity: int):\n        if not isinstance(capacity, int) or capacity <= 0:\n            raise ValueError(\"capacity must be a positive integer\")\n        self.capacity = capacity\n        self.vals = {}  # key -> val\n        self.freqs = {}  # key -> freq\n        self.freq_buckets = defaultdict(OrderedDict)  # freq -> OrderedDict of keys\n        self.min_freq = 0\n\n    def get(self, key: int) -> int:\n        if key not in self.vals:\n            return -1\n        self._update_freq(key)\n        return self.vals[key]\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.vals:\n            self.vals[key] = value\n            self._update_freq(key)\n            return\n\n        if len(self.vals) >= self.capacity:\n            # Desalojar LRU del bucket con min_freq\n            evict_key, _ = self.freq_buckets[self.min_freq].popitem(last=False)\n            del self.vals[evict_key]\n            del self.freqs[evict_key]\n\n        self.vals[key] = value\n        self.freqs[key] = 1\n        self.freq_buckets[1][key] = True\n        self.min_freq = 1\n\n    def _update_freq(self, key: int):\n        old_freq = self.freqs[key]\n        new_freq = old_freq + 1\n        self.freqs[key] = new_freq\n\n        del self.freq_buckets[old_freq][key]\n        if not self.freq_buckets[old_freq] and self.min_freq == old_freq:\n            self.min_freq = new_freq\n\n        self.freq_buckets[new_freq][key] = True\n",
+    "edge_cases": [
+      "capacity <= 0 levanta ValueError",
+      "get de clave inexistente retorna -1",
+      "Desalojo por frecuencia mínima correcta",
+      "Desalojo por LRU en caso de empate en frecuencia mínima"
+    ],
+    "tests": "import unittest\n\nclass TestLFUCache(unittest.TestCase):\n    def test_lfu_eviction(self):\n        cache = LFUCache(2)\n        cache.put(1, 1)\n        cache.put(2, 2)\n        self.assertEqual(cache.get(1), 1)  # freq(1)=2\n        cache.put(3, 3)                    # Desaloja 2 (freq(2)=1 vs freq(1)=2)\n        self.assertEqual(cache.get(2), -1)\n        self.assertEqual(cache.get(3), 3)\n\n    def test_tie_breaking_by_lru(self):\n        cache = LFUCache(2)\n        cache.put(1, 10)\n        cache.put(2, 20)\n        # Ambas tienen freq=1. Al insertar 3, desaloja 1 (la mas antigua)\n        cache.put(3, 30)\n        self.assertEqual(cache.get(1), -1)\n        self.assertEqual(cache.get(2), 20)\n        self.assertEqual(cache.get(3), 30)\n\n    def test_invalid_capacity(self):\n        with self.assertRaises(ValueError):\n            LFUCache(0)\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:21Z"
+  },
+  {
+    "task_id": "train_14_roman_numeral_strict_parser",
+    "category": "edge_cases",
+    "contract": "Implementa roman_to_int(roman: str) -> int con validación estricta de la notación romana estándar.\nValores: I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\nReglas sustractivas válidas exclusivas: IV(4), IX(9), XL(40), XC(90), CD(400), CM(900).\nValidaciones:\n- Si roman no es str, levantar TypeError.\n- Si roman es cadena vacía, levantar ValueError('roman string cannot be empty').\n- No se permiten más de 3 repeticiones consecutivas de I, X, C, M (ej. 'IIII' es inválido).\n- V, L, D no pueden repetirse ni restarse jamás (ej. 'VV' o 'VX' es inválido).\n- Substracciones no estándar (ej. 'IL', 'IC', 'XD') o sintaxis no canónica levantan ValueError.",
+    "input_signature": "def roman_to_int(roman: str) -> int",
+    "reference_solution": "import re\n\ndef roman_to_int(roman: str) -> int:\n    if not isinstance(roman, str):\n        raise TypeError(\"roman must be a string\")\n    if not roman:\n        raise ValueError(\"roman string cannot be empty\")\n\n    # Expresion regular canónica para números romanos estándar (1 a 3999)\n    valid_roman_pattern = re.compile(\n        r\"^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$\"\n    )\n    if not valid_roman_pattern.match(roman):\n        raise ValueError(f\"Invalid Roman numeral: '{roman}'\")\n\n    values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n    total = 0\n    n = len(roman)\n    for i in range(n):\n        curr_val = values[roman[i]]\n        if i + 1 < n and curr_val < values[roman[i + 1]]:\n            total -= curr_val\n        else:\n            total += curr_val\n    return total\n",
+    "edge_cases": [
+      "Cadena vacía o no str levanta ValueError/TypeError",
+      "Cuatro caracteres iguales consecutivos (ej. 'IIII') levanta ValueError",
+      "Sustracción ilegal (ej. 'IL' en vez de 'XLIX') levanta ValueError",
+      "Múltiples sustracciones repetidas (ej. 'IIV') levanta ValueError",
+      "Entrada no string levanta TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestRomanToInt(unittest.TestCase):\n    def test_valid_numbers(self):\n        self.assertEqual(roman_to_int(\"III\"), 3)\n        self.assertEqual(roman_to_int(\"LVIII\"), 58)\n        self.assertEqual(roman_to_int(\"MCMXCIV\"), 1994)\n\n    def test_invalid_syntax_raises(self):\n        with self.assertRaises(ValueError):\n            roman_to_int(\"IIII\")\n        with self.assertRaises(ValueError):\n            roman_to_int(\"IL\")\n        with self.assertRaises(ValueError):\n            roman_to_int(\"VV\")\n        with self.assertRaises(ValueError):\n            roman_to_int(\"\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:22Z"
+  },
+  {
+    "task_id": "train_15_ip_network_cidr_validator",
+    "category": "edge_cases",
+    "contract": "Implementa is_ip_in_cidr(ip: str, cidr: str) -> bool que determine si una dirección IPv4 pertenece a una red CIDR.\nValidaciones obligatorias:\n- Si ip o cidr no son cadenas de texto (str), levantar TypeError.\n- IPv4 válida: exactamente 4 octetos enteros entre 0 y 255 separados por punto, sin ceros a la izquierda (ej. '01' es inválido) excepto '0' solo.\n- CIDR válido: 'ip_base/prefix' donde prefix es entero entre 0 y 32, y la ip_base cumple el formato IPv4.\n- Si ip o cidr tienen formato inválido (octetos fuera de rango, ceros iniciales, prefijo inválido o sin separador '/'), levantar ValueError.\n- Retornar True si ip pertenece al rango de red, False en caso contrario.",
+    "input_signature": "def is_ip_in_cidr(ip: str, cidr: str) -> bool",
+    "reference_solution": "def is_ip_in_cidr(ip: str, cidr: str) -> bool:\n    if not isinstance(ip, str) or not isinstance(cidr, str):\n        raise TypeError(\"ip and cidr must be strings\")\n\n    def _parse_ipv4(addr_str: str) -> int:\n        parts = addr_str.split('.')\n        if len(parts) != 4:\n            raise ValueError(f\"Invalid IPv4: {addr_str}\")\n        num = 0\n        for part in parts:\n            if not part.isdigit():\n                raise ValueError(f\"Invalid octet: '{part}'\")\n            if len(part) > 1 and part.startswith('0'):\n                raise ValueError(f\"Leading zeros not allowed: '{part}'\")\n            val = int(part)\n            if val < 0 or val > 255:\n                raise ValueError(f\"Octet out of range: {val}\")\n            num = (num << 8) | val\n        return num\n\n    if '/' not in cidr:\n        raise ValueError(\"CIDR must contain '/'\")\n    network_str, prefix_str = cidr.split('/', 1)\n    if not prefix_str.isdigit():\n        raise ValueError(\"CIDR prefix must be integer\")\n    prefix = int(prefix_str)\n    if prefix < 0 or prefix > 32:\n        raise ValueError(\"CIDR prefix must be between 0 and 32\")\n\n    ip_int = _parse_ipv4(ip)\n    net_int = _parse_ipv4(network_str)\n\n    if prefix == 0:\n        return True\n    mask = ((1 << 32) - 1) ^ ((1 << (32 - prefix)) - 1)\n    return (ip_int & mask) == (net_int & mask)\n",
+    "edge_cases": [
+      "Octetos mayores a 255 o menores a 0 levantan ValueError",
+      "Ceros a la izquierda en octetos (ej. '192.168.01.1') levantan ValueError",
+      "Prefijo CIDR menor a 0 o mayor a 32 levanta ValueError",
+      "Comparación a nivel de máscara de bits de 32 bits",
+      "Parámetros que no son str levantan TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestIPCIDR(unittest.TestCase):\n    def test_containment(self):\n        self.assertTrue(is_ip_in_cidr(\"192.168.1.50\", \"192.168.1.0/24\"))\n        self.assertFalse(is_ip_in_cidr(\"192.168.2.1\", \"192.168.1.0/24\"))\n\n    def test_invalid_octets_raise(self):\n        with self.assertRaises(ValueError):\n            is_ip_in_cidr(\"192.168.01.1\", \"192.168.1.0/24\")\n        with self.assertRaises(ValueError):\n            is_ip_in_cidr(\"256.0.0.1\", \"10.0.0.0/8\")\n\n    def test_invalid_prefix_raises(self):\n        with self.assertRaises(ValueError):\n            is_ip_in_cidr(\"10.0.0.1\", \"10.0.0.0/33\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:22Z"
+  },
+  {
+    "task_id": "train_16_levenshtein_distance_matrix",
+    "category": "edge_cases",
+    "contract": "Implementa levenshtein_distance(s1: str, s2: str) -> int que calcule la distancia de edición mínima (inserciones, eliminaciones, sustituciones).\nRequisitos:\n- Retornar 0 si s1 == s2.\n- Si s1 o s2 no son str, levantar TypeError.\n- Manejar cadenas vacías: si una es vacía, retornar la longitud de la otra.\n- Complejidad O(len(s1) * len(s2)) con memoria O(min(len(s1), len(s2))).",
+    "input_signature": "def levenshtein_distance(s1: str, s2: str) -> int",
+    "reference_solution": "def levenshtein_distance(s1: str, s2: str) -> int:\n    if not isinstance(s1, str) or not isinstance(s2, str):\n        raise TypeError(\"Both arguments must be strings\")\n    if s1 == s2:\n        return 0\n    if not s1:\n        return len(s2)\n    if not s2:\n        return len(s1)\n\n    if len(s1) < len(s2):\n        s1, s2 = s2, s1\n\n    prev_row = list(range(len(s2) + 1))\n    for i, c1 in enumerate(s1):\n        curr_row = [i + 1] + [0] * len(s2)\n        for j, c2 in enumerate(s2):\n            insertions = prev_row[j + 1] + 1\n            deletions = curr_row[j] + 1\n            substitutions = prev_row[j] + (c1 != c2)\n            curr_row[j + 1] = min(insertions, deletions, substitutions)\n        prev_row = curr_row\n\n    return prev_row[-1]\n",
+    "edge_cases": [
+      "Cadenas idénticas retornan 0",
+      "Una o ambas cadenas vacías",
+      "Tipos no str levantan TypeError",
+      "Diferencia de mayúsculas cuenta como sustitución"
+    ],
+    "tests": "import unittest\n\nclass TestLevenshtein(unittest.TestCase):\n    def test_standard_distances(self):\n        self.assertEqual(levenshtein_distance(\"kitten\", \"sitting\"), 3)\n        self.assertEqual(levenshtein_distance(\"flaw\", \"lawn\"), 2)\n\n    def test_empty_strings(self):\n        self.assertEqual(levenshtein_distance(\"\", \"\"), 0)\n        self.assertEqual(levenshtein_distance(\"hello\", \"\"), 5)\n\n    def test_invalid_types_raise(self):\n        with self.assertRaises(TypeError):\n            levenshtein_distance(\"a\", 123)\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:23Z"
+  },
+  {
+    "task_id": "train_17_bounded_blocking_queue",
+    "category": "concurrency",
+    "contract": "Implementa una cola bloqueante acotada thread-safe BoundedBlockingQueue usando threading.Condition.\nMétodos requeridos:\n- __init__(capacity: int): si capacity <= 0 levanta ValueError.\n- put(item, timeout: float = None) -> bool: agrega un item. Si está llena, bloquea hasta que haya espacio o expire timeout. Retorna True si se insertó, False si expiró el timeout.\n- get(timeout: float = None): extrae y retorna el elemento FIFO. Si está vacía, bloquea hasta que haya elementos o expire timeout. Si expira timeout, levanta TimeoutError.\n- qsize() -> int: retorna cantidad de elementos actuales.",
+    "input_signature": "class BoundedBlockingQueue: def put(self, item, timeout: float = None) -> bool; def get(self, timeout: float = None); def qsize(self) -> int",
+    "reference_solution": "import threading\nimport time\nfrom collections import deque\n\nclass BoundedBlockingQueue:\n    def __init__(self, capacity: int):\n        if not isinstance(capacity, int) or capacity <= 0:\n            raise ValueError(\"capacity must be a positive integer\")\n        self.capacity = capacity\n        self.queue = deque()\n        self.lock = threading.Lock()\n        self.not_empty = threading.Condition(self.lock)\n        self.not_full = threading.Condition(self.lock)\n\n    def qsize(self) -> int:\n        with self.lock:\n            return len(self.queue)\n\n    def put(self, item, timeout: float = None) -> bool:\n        start_time = time.time()\n        with self.not_full:\n            while len(self.queue) >= self.capacity:\n                if timeout is not None:\n                    elapsed = time.time() - start_time\n                    remaining = timeout - elapsed\n                    if remaining <= 0:\n                        return False\n                    if not self.not_full.wait(remaining):\n                        return False\n                else:\n                    self.not_full.wait()\n            self.queue.append(item)\n            self.not_empty.notify()\n            return True\n\n    def get(self, timeout: float = None):\n        start_time = time.time()\n        with self.not_empty:\n            while not self.queue:\n                if timeout is not None:\n                    elapsed = time.time() - start_time\n                    remaining = timeout - elapsed\n                    if remaining <= 0:\n                        raise TimeoutError(\"Queue get timed out\")\n                    if not self.not_empty.wait(remaining):\n                        raise TimeoutError(\"Queue get timed out\")\n                else:\n                    self.not_empty.wait()\n            item = self.queue.popleft()\n            self.not_full.notify()\n            return item\n",
+    "edge_cases": [
+      "capacity <= 0 levanta ValueError",
+      "put con cola llena respeta timeout y retorna False",
+      "get con cola vacía respeta timeout y levanta TimeoutError",
+      "Coordinación concurrente productor-consumidor entre múltiples hilos"
+    ],
+    "tests": "import unittest\nimport threading\n\nclass TestBoundedBlockingQueue(unittest.TestCase):\n    def test_fifo_and_capacity(self):\n        q = BoundedBlockingQueue(2)\n        self.assertTrue(q.put(\"a\"))\n        self.assertTrue(q.put(\"b\"))\n        self.assertFalse(q.put(\"c\", timeout=0.05))\n        self.assertEqual(q.get(), \"a\")\n        self.assertTrue(q.put(\"c\", timeout=0.05))\n\n    def test_empty_get_timeout(self):\n        q = BoundedBlockingQueue(2)\n        with self.assertRaises(TimeoutError):\n            q.get(timeout=0.05)\n\n    def test_invalid_capacity(self):\n        with self.assertRaises(ValueError):\n            BoundedBlockingQueue(0)\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:23Z"
+  },
+  {
+    "task_id": "train_18_async_rate_limited_semaphore_worker",
+    "category": "concurrency",
+    "contract": "Implementa async_map_with_concurrency(items: list, worker_coro: callable, max_concurrency: int) -> list.\nRequisitos:\n- Ejecuta worker_coro(item) para cada elemento de items concurrentemente pero limitando a no más de max_concurrency tareas simultáneas con asyncio.Semaphore.\n- Retorna los resultados en el orden original de items.\n- Si items es [], retorna [].\n- Si max_concurrency <= 0, levanta ValueError.\n- Si alguna invocación levanta excepción, cancelar las restantes y re-lanzarla.",
+    "input_signature": "async def async_map_with_concurrency(items: list, worker_coro, max_concurrency: int) -> list",
+    "reference_solution": "import asyncio\n\nasync def async_map_with_concurrency(items: list, worker_coro, max_concurrency: int) -> list:\n    if not isinstance(items, list):\n        raise TypeError(\"items must be a list\")\n    if not isinstance(max_concurrency, int) or max_concurrency <= 0:\n        raise ValueError(\"max_concurrency must be a positive integer\")\n    if not items:\n        return []\n\n    sem = asyncio.Semaphore(max_concurrency)\n\n    async def _safe_worker(idx, item):\n        async with sem:\n            res = await worker_coro(item)\n            return idx, res\n\n    tasks = [asyncio.create_task(_safe_worker(i, item)) for i, item in enumerate(items)]\n    try:\n        results_with_idx = await asyncio.gather(*tasks)\n        results_with_idx.sort(key=lambda x: x[0])\n        return [r for _, r in results_with_idx]\n    except Exception:\n        for t in tasks:\n            if not t.done():\n                t.cancel()\n        await asyncio.gather(*tasks, return_exceptions=True)\n        raise\n",
+    "edge_cases": [
+      "items vacíos retorna []",
+      "max_concurrency <= 0 levanta ValueError",
+      "Preservación estricta de orden original de resultados",
+      "Cancelación y re-lanzamiento ante excepciones"
+    ],
+    "tests": "import unittest\nimport asyncio\n\nclass TestAsyncMapConcurrency(unittest.TestCase):\n    def test_preserves_order_and_limits_concurrency(self):\n        async def main():\n            current_active = [0]\n            max_seen = [0]\n            async def worker(val):\n                current_active[0] += 1\n                max_seen[0] = max(max_seen[0], current_active[0])\n                await asyncio.sleep(0.01)\n                current_active[0] -= 1\n                return val * 10\n\n            res = await async_map_with_concurrency([1, 2, 3, 4], worker, max_concurrency=2)\n            self.assertEqual(res, [10, 20, 30, 40])\n            self.assertLessEqual(max_seen[0], 2)\n        asyncio.run(main())\n\n    def test_invalid_args(self):\n        async def main():\n            async def noop(x): return x\n            with self.assertRaises(ValueError):\n                await async_map_with_concurrency([1], noop, max_concurrency=0)\n        asyncio.run(main())\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:24Z"
+  },
+  {
+    "task_id": "train_19_refactor_order_state_machine",
+    "category": "refactoring",
+    "contract": "Refactoriza una máquina de estados de pedidos en OrderStateMachine.\nEstados válidos: 'created', 'paid', 'shipped', 'delivered', 'cancelled'.\nTransiciones válidas exclusivas:\n- 'created' -> 'paid', 'cancelled'\n- 'paid' -> 'shipped', 'cancelled'\n- 'shipped' -> 'delivered'\nMétodos requeridos:\n- __init__(initial_state: str = 'created'): levanta ValueError si initial_state no es válido.\n- transition(event: str) -> str: aplica evento ('pay', 'ship', 'deliver', 'cancel') y retorna el nuevo estado. Si la transición no es válida desde el estado actual, levanta IllegalStateTransitionError(Exception).\n- current_state -> str (propiedad).",
+    "input_signature": "class IllegalStateTransitionError(Exception): pass; class OrderStateMachine: def transition(self, event: str) -> str; @property def current_state(self) -> str",
+    "reference_solution": "class IllegalStateTransitionError(Exception):\n    pass\n\nclass OrderStateMachine:\n    VALID_STATES = {'created', 'paid', 'shipped', 'delivered', 'cancelled'}\n    TRANSITIONS = {\n        ('created', 'pay'): 'paid',\n        ('created', 'cancel'): 'cancelled',\n        ('paid', 'ship'): 'shipped',\n        ('paid', 'cancel'): 'cancelled',\n        ('shipped', 'deliver'): 'delivered',\n    }\n\n    def __init__(self, initial_state: str = 'created'):\n        if initial_state not in self.VALID_STATES:\n            raise ValueError(f\"Invalid initial state: '{initial_state}'\")\n        self._state = initial_state\n\n    @property\n    def current_state(self) -> str:\n        return self._state\n\n    def transition(self, event: str) -> str:\n        key = (self._state, event)\n        if key not in self.TRANSITIONS:\n            raise IllegalStateTransitionError(\n                f\"Cannot perform event '{event}' from state '{self._state}'\"\n            )\n        self._state = self.TRANSITIONS[key]\n        return self._state\n",
+    "edge_cases": [
+      "initial_state no válido levanta ValueError",
+      "Transición no permitida (ej. 'delivered' -> 'cancelled') levanta IllegalStateTransitionError",
+      "Evento desconocido levanta IllegalStateTransitionError",
+      "Idempotencia de consultas de estado"
+    ],
+    "tests": "import unittest\n\nclass TestOrderStateMachine(unittest.TestCase):\n    def test_happy_path_transitions(self):\n        osm = OrderStateMachine()\n        self.assertEqual(osm.current_state, \"created\")\n        self.assertEqual(osm.transition(\"pay\"), \"paid\")\n        self.assertEqual(osm.transition(\"ship\"), \"shipped\")\n        self.assertEqual(osm.transition(\"deliver\"), \"delivered\")\n\n    def test_illegal_transition_raises(self):\n        osm = OrderStateMachine(\"delivered\")\n        with self.assertRaises(IllegalStateTransitionError):\n            osm.transition(\"cancel\")\n\n    def test_invalid_initial_state(self):\n        with self.assertRaises(ValueError):\n            OrderStateMachine(\"unknown_state\")\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:25Z"
+  },
+  {
+    "task_id": "train_20_refactor_polymorphic_discount_engine",
+    "category": "refactoring",
+    "contract": "Refactoriza un motor de cálculo de precios en una función pura apply_discount_rules(order: dict) -> dict.\nReglas de contrato estricto:\n- Si order no es un diccionario (dict), levantar TypeError.\n- order contiene claves: 'items_subtotal' (float o int >= 0), 'user_tier' ('standard', 'gold', 'vip'), 'coupon_code' (str opcional).\n- Descuentos por tier: 'standard': 0%, 'gold': 10%, 'vip': 20%.\n- Cupones: 'SAVE10': $10 fijos; 'SAVE20': $20 fijos. Un cupón no puede descontar más del 50% del subtotal tras el tier discount.\n- Inmutabilidad: Retorna un NUEVO diccionario {'final_price': float, 'discount_applied': float} sin mutar order.\n- Si items_subtotal < 0, falta items_subtotal o no es numérico, o user_tier es desconocido, levantar ValueError.\n- El precio final nunca puede ser negativo (mínimo 0.0).",
+    "input_signature": "def apply_discount_rules(order: dict) -> dict",
+    "reference_solution": "def apply_discount_rules(order: dict) -> dict:\n    if not isinstance(order, dict):\n        raise TypeError(\"order must be a dictionary\")\n\n    subtotal = order.get(\"items_subtotal\")\n    if subtotal is None or not isinstance(subtotal, (int, float)) or subtotal < 0:\n        raise ValueError(\"items_subtotal must be a non-negative number\")\n\n    tier = order.get(\"user_tier\", \"standard\")\n    tier_discounts = {\n        \"standard\": 0.0,\n        \"gold\": 0.10,\n        \"vip\": 0.20\n    }\n    if tier not in tier_discounts:\n        raise ValueError(f\"Unknown user_tier: '{tier}'\")\n\n    # 1. Tier discount\n    tier_discount_amount = subtotal * tier_discounts[tier]\n    price_after_tier = subtotal - tier_discount_amount\n\n    # 2. Coupon discount\n    coupon = order.get(\"coupon_code\", \"\")\n    coupon_discount_amount = 0.0\n    if coupon == \"SAVE10\":\n        coupon_discount_amount = 10.0\n    elif coupon == \"SAVE20\":\n        coupon_discount_amount = 20.0\n\n    # Tope de cupon: maximo 50% de price_after_tier\n    max_coupon_discount = price_after_tier * 0.50\n    effective_coupon_discount = min(coupon_discount_amount, max_coupon_discount)\n\n    total_discount = tier_discount_amount + effective_coupon_discount\n    final_price = max(0.0, round(subtotal - total_discount, 2))\n\n    return {\n        \"final_price\": final_price,\n        \"discount_applied\": round(total_discount, 2)\n    }\n",
+    "edge_cases": [
+      "items_subtotal negativo levanta ValueError",
+      "user_tier no válido levanta ValueError",
+      "Cupón con tope de 50% de descuento máximo",
+      "Inmutabilidad del diccionario order original",
+      "order que no es dict levanta TypeError"
+    ],
+    "tests": "import unittest\n\nclass TestDiscountEngine(unittest.TestCase):\n    def test_standard_and_gold(self):\n        res = apply_discount_rules({\"items_subtotal\": 100.0, \"user_tier\": \"gold\"})\n        self.assertEqual(res[\"final_price\"], 90.0)\n        self.assertEqual(res[\"discount_applied\"], 10.0)\n\n    def test_coupon_capped_at_50_pct(self):\n        # subtotal $10, SAVE10 daria $10 pero tope 50% limita a $5\n        res = apply_discount_rules({\"items_subtotal\": 10.0, \"user_tier\": \"standard\", \"coupon_code\": \"SAVE10\"})\n        self.assertEqual(res[\"final_price\"], 5.0)\n        self.assertEqual(res[\"discount_applied\"], 5.0)\n\n    def test_immutability(self):\n        order = {\"items_subtotal\": 100.0, \"user_tier\": \"vip\"}\n        order_copy = dict(order)\n        res = apply_discount_rules(order)\n        self.assertEqual(order, order_copy)\n\n    def test_invalid_order_raises(self):\n        with self.assertRaises(ValueError):\n            apply_discount_rules({\"items_subtotal\": -10.0})\n        with self.assertRaises(ValueError):\n            apply_discount_rules({\"items_subtotal\": 50.0, \"user_tier\": \"diamond\"})\n",
+    "verification_status": "VERIFIED_SANDBOX_AND_MUTANT",
+    "source": "aura_core_verified_synthetic",
+    "verified_at_iso": "2026-10-26T15:18:25Z"
+  }
+]

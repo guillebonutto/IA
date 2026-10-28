@@ -13,6 +13,7 @@ import urllib.parse
 import re
 import platform
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 class AgentTools:
@@ -332,6 +333,15 @@ class AgentTools:
             pass
         return stats
 
+    @staticmethod
+    def get_datetime() -> dict:
+        """Devuelve la fecha y hora local con su zona horaria."""
+        now = datetime.now().astimezone()
+        return {
+            "local_datetime": now.isoformat(timespec="seconds"),
+            "timezone": now.tzname() or str(now.tzinfo),
+        }
+
     def get_watchdog_report(self) -> dict:
         """Devuelve el reporte del supervisor: procesos de trading activos, logs y hardware."""
         try:
@@ -427,6 +437,17 @@ class AgentTools:
                 "function": {
                     "name": "get_system_stats",
                     "description": "Consulta el estado del sistema: CPU, RAM y espacio en disco.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {}
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_datetime",
+                    "description": "Devuelve la fecha y hora local actual, incluida la zona horaria. Úsala cuando el usuario pregunte qué hora o fecha es.",
                     "parameters": {
                         "type": "object",
                         "properties": {}

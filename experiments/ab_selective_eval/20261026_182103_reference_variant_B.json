@@ -1,0 +1,475 @@
+{
+  "metadata": {
+    "mode": "B",
+    "suite_name": "reference",
+    "tasks_file": "coding_tasks.json",
+    "timestamp_iso": "2026-10-26T18:57:06.727708+00:00",
+    "git": {
+      "git_commit": "5e2c3daac5b151becbb9f24cd7ddcd93d807af0f",
+      "git_worktree_dirty": true,
+      "repo": "guillebonutto/IA"
+    },
+    "hardware": {
+      "processor": "AMD64 Family 23 Model 17 Stepping 0, AuthenticAMD",
+      "machine": "AMD64",
+      "system": "Windows",
+      "release": "10",
+      "python_version": "3.14.0"
+    },
+    "config": {
+      "model_name": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
+      "temperature": 0.0,
+      "system_prompt_version": "V2",
+      "max_examples_icl": 2
+    }
+  },
+  "summary": {
+    "total_tasks": 12,
+    "valid_runs": 10,
+    "infrastructure_errors": 2,
+    "pass_at_1_count": 2,
+    "pass_at_1_pct": 20.0,
+    "repaired_count": 2,
+    "final_pass_count": 4,
+    "final_pass_pct": 40.0,
+    "total_latency_s": 2110.99,
+    "avg_latency_s": 175.92
+  },
+  "task_results": [
+    {
+      "task_id": "task_01_lru_cache",
+      "title": "Implementacion de LRU Cache en O(1)",
+      "category": "code_generation",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": true,
+      "repaired": false,
+      "final_passed": true,
+      "attempts_used": 1,
+      "is_valid_run": true,
+      "error_category": null,
+      "initial_error": "",
+      "attempt1_latency_s": 88.287,
+      "attempt1_eval_s": 0.082,
+      "attempt1_status": "PASS",
+      "attempt2_latency_s": 0.0,
+      "attempt2_eval_s": 0.0,
+      "attempt2_status": null,
+      "attempt2_diagnostic_lines": [],
+      "total_latency_s": 88.287,
+      "retrieved_examples": [
+        {
+          "task_id": "train_13_lfu_cache_frequency_bucket",
+          "score": 118.8873,
+          "category": "data_structures"
+        },
+        {
+          "task_id": "train_09_debug_linked_list_cycle_detection",
+          "score": 8.3304,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_02_sliding_rate_limiter",
+      "title": "Rate Limiter por Ventana Deslizante Thread-Safe",
+      "category": "code_generation",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": true,
+      "final_passed": true,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": null,
+      "initial_error": "test_basic_window_allowing (__main__.TestSlidingLimiter.test_basic_window_allowing) ... ERROR\ntest_concurrent_access (__main__.TestSlidingLimiter.test_concurrent_access) ... Exception in thread Thread-1 (worker):\nException in thread Thread-2 (worker):\nException in thread Thread-3 (worker):\nException in thread Thread-5 (worker):\nException in thread Thread-6 (worker):\nException in thread Thread-7 (worker):\nTraceback (most recent call last):\nException in thread Thread-8 (worker):\nTraceback (most recent call last):\nTraceback (most recent call last):\nTraceback (most recent call last):\nException in thread Thread-4 (worker):\nTraceback (most recent call last):\nTraceback (most recent call last):\nException in thread Thread-9 (worker):\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\nException in thread Thread-10 (worker):\nTraceback (most recent call last):\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\nTraceback (most recent call last):\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 1043, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/threading.py\", line 994, in run\n    self._target(*self._args, **self._kwargs)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\nTypeError: '>=' not supported between instances of 'list' and 'float'\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 75, in worker\n    res = limiter.allow_request('c1', current_time=100.0)\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nTypeError: '>=' not supported between instances of 'list' and 'float'\nFAIL\ntest_invalid_parameters (__main__.TestSlidingLimiter.test_invalid_parameters) ... ok\ntest_rejected_request_does_not_consume_quota (__main__.TestSlidingLimiter.test_rejected_request_does_not_consume_quota) ... ERROR\ntest_window_sliding_expiration (__main__.TestSlidingLimiter.test_window_sliding_expiration) ... ERROR\n\n======================================================================\nERROR: test_basic_window_allowing (__main__.TestSlidingLimiter.test_basic_window_allowing)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 43, in test_basic_window_allowing\n    self.assertTrue(limiter.allow_request('user1', current_time=101.0))\n                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: '>=' not supported between instances of 'list' and 'float'\n\n======================================================================\nERROR: test_rejected_request_does_not_consume_quota (__main__.TestSlidingLimiter.test_rejected_request_does_not_consume_quota)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 59, in test_rejected_request_does_not_consume_quota\n    self.assertFalse(limiter.allow_request('u1', current_time=11.0))\n                     ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: '>=' not supported between instances of 'list' and 'float'\n\n======================================================================\nERROR: test_window_sliding_expiration (__main__.TestSlidingLimiter.test_window_sliding_expiration)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 51, in test_window_sliding_expiration\n    self.assertTrue(limiter.allow_request('u1', current_time=12.0))\n                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 22, in allow_request\n    self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: '>=' not supported between instances of 'list' and 'float'\n\n======================================================================\nFAIL: test_concurrent_access (__main__.TestSlidingLimiter.test_concurrent_access)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_scimkbk8/test_runner.py\", line 80, in test_concurrent_access\n    self.assertEqual(len(results), 50)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 50\n\n----------------------------------------------------------------------\nRan 5 tests in 0.027s\n\nFAILED (failures=1, errors=3)",
+      "final_error": "",
+      "attempt1_latency_s": 87.727,
+      "attempt1_eval_s": 0.099,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 121.585,
+      "attempt2_eval_s": 0.07,
+      "attempt2_status": "PASS",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** `TypeError` en `self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}` debido a que `v` es una lista de tiempos, no un float.",
+        "**CONTRATO:** `self.requests` debe ser un diccionario donde las claves son `client_id` y los valores son listas de tiempos.",
+        "**CORRECCIÓN:** Convertir `v` a un float antes de compararlo con `current_time - self.window_seconds`.",
+        "- **ERROR:** `TypeError` en `self.requests = {k: v for k, v in self.requests.items() if v >= current_time - self.window_seconds}` debido a que `v` es una lista de tiempos, no un float.",
+        "- **CONTRATO:** `self.requests` debe ser un diccionario donde las claves son `client_id` y los valores son listas de tiempos.",
+        "- **CORRECCIÓN:** Convertir `v` a un float antes de compararlo con `current_time - self.window_seconds`."
+      ],
+      "total_latency_s": 209.312,
+      "retrieved_examples": [
+        {
+          "task_id": "train_23_sliding_window_maximum",
+          "score": 68.4263,
+          "category": "code_generation"
+        },
+        {
+          "task_id": "train_28_debug_rate_limited_batch_retry",
+          "score": 24.9961,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_03_flatten_nested_json",
+      "title": "Aplanamiento Recursivo de Estructuras JSON Jerárquicas",
+      "category": "code_generation",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok\ntest_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL\ntest_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok\ntest_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ok\ntest_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok\ntest_with_lists (__main__.TestFlattenDict.test_with_lists) ... FAIL\n\n======================================================================\nFAIL: test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_22yh1yt7/test_runner.py\", line 45, in test_empty_containers_preserved\n    self.assertEqual(res, {'meta': {}, 'tags': [], 'valid': True})\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'valid': True} != {'meta': {}, 'tags': [], 'valid': True}\n- {'valid': True}\n+ {'meta': {}, 'tags': [], 'valid': True}\n\n======================================================================\nFAIL: test_with_lists (__main__.TestFlattenDict.test_with_lists)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_22yh1yt7/test_runner.py\", line 40, in test_with_lists\n    self.assertEqual(res, expected)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\nAssertionError: {'ite[32 chars]rix.0': [1, 2], 'matrix.1': [3, 4]} != {'ite[32 chars]rix.0.0': 1, 'matrix.0.1': 2, 'matrix.1.0': 3, 'matrix.1.1': 4}\n- {'items.0': 'x', 'items.1': 'y', 'matrix.0': [1, 2], 'matrix.1': [3, 4]}\n+ {'items.0': 'x',\n+  'items.1': 'y',\n+  'matrix.0.0': 1,\n+  'matrix.0.1': 2,\n+  'matrix.1.0': 3,\n+  'matrix.1.1': 4}\n\n----------------------------------------------------------------------\nRan 6 tests in 0.002s\n\nFAILED (failures=2)",
+      "final_error": "test_custom_separator (__main__.TestFlattenDict.test_custom_separator) ... ok\ntest_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved) ... FAIL\ntest_invalid_type (__main__.TestFlattenDict.test_invalid_type) ... ok\ntest_pure_function_no_mutation (__main__.TestFlattenDict.test_pure_function_no_mutation) ... ok\ntest_simple_dict (__main__.TestFlattenDict.test_simple_dict) ... ok\ntest_with_lists (__main__.TestFlattenDict.test_with_lists) ... FAIL\n\n======================================================================\nFAIL: test_empty_containers_preserved (__main__.TestFlattenDict.test_empty_containers_preserved)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_tc5ibpw9/test_runner.py\", line 45, in test_empty_containers_preserved\n    self.assertEqual(res, {'meta': {}, 'tags': [], 'valid': True})\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'valid': True} != {'meta': {}, 'tags': [], 'valid': True}\n- {'valid': True}\n+ {'meta': {}, 'tags': [], 'valid': True}\n\n======================================================================\nFAIL: test_with_lists (__main__.TestFlattenDict.test_with_lists)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_tc5ibpw9/test_runner.py\", line 40, in test_with_lists\n    self.assertEqual(res, expected)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\nAssertionError: {'ite[32 chars]rix.0': [1, 2], 'matrix.1': [3, 4]} != {'ite[32 chars]rix.0.0': 1, 'matrix.0.1': 2, 'matrix.1.0': 3, 'matrix.1.1': 4}\n- {'items.0': 'x', 'items.1': 'y', 'matrix.0': [1, 2], 'matrix.1': [3, 4]}\n+ {'items.0': 'x',\n+  'items.1': 'y',\n+  'matrix.0.0': 1,\n+  'matrix.0.1': 2,\n+  'matrix.1.0': 3,\n+  'matrix.1.1': 4}\n\n----------------------------------------------------------------------\nRan 6 tests in 0.002s\n\nFAILED (failures=2)",
+      "attempt1_latency_s": 68.191,
+      "attempt1_eval_s": 0.072,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 88.944,
+      "attempt2_eval_s": 0.074,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** Los tests fallaron debido a la preservación incorrecta de las estructuras vacías en el resultado. En particular, los diccionarios y listas vacías no se mantuvieron en el resultado esperado.",
+        "**CONTRATO:** La función debe preservar las estructuras vacías en el resultado, por ejemplo, `{'a': {}, 'b': []}` -> `{'a': {}, 'b': []}`.",
+        "**CORRECCIÓN:** En el código, se debe asegurar que las estructuras vacías se mantengan en el resultado. Esto se puede hacer al verificar si el valor es una lista o un diccionario antes de iterar sobre sus elementos."
+      ],
+      "total_latency_s": 157.135,
+      "retrieved_examples": [
+        {
+          "task_id": "train_35_safe_nested_path_extractor",
+          "score": 39.5053,
+          "category": "edge_cases"
+        },
+        {
+          "task_id": "train_07_debug_generator_pipeline",
+          "score": 3.126,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_04_debug_mutable_default_and_closure",
+      "title": "Corrección de Argumentos Mutables por Defecto y Cierres en Bucle",
+      "category": "debugging",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "test_closure_late_binding_resolved (__main__.TestMakeHandlers.test_closure_late_binding_resolved) ... ok\ntest_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ... FAIL\ntest_no_mutation_of_caller_dict (__main__.TestMakeHandlers.test_no_mutation_of_caller_dict) ... ok\n\n======================================================================\nFAIL: test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_xp7adbl4/test_runner.py\", line 27, in test_mutable_default_no_leak\n    self.assertEqual(h1[0](), 'a:2')\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\nAssertionError: 'a:1' != 'a:2'\n- a:1\n?   ^\n+ a:2\n?   ^\n\n\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nFAILED (failures=1)",
+      "final_error": "test_closure_late_binding_resolved (__main__.TestMakeHandlers.test_closure_late_binding_resolved) ... ok\ntest_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak) ... FAIL\ntest_no_mutation_of_caller_dict (__main__.TestMakeHandlers.test_no_mutation_of_caller_dict) ... ok\n\n======================================================================\nFAIL: test_mutable_default_no_leak (__main__.TestMakeHandlers.test_mutable_default_no_leak)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_i2qjmazl/test_runner.py\", line 27, in test_mutable_default_no_leak\n    self.assertEqual(h1[0](), 'a:2')\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\nAssertionError: 'a:1' != 'a:2'\n- a:1\n?   ^\n+ a:2\n?   ^\n\n\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nFAILED (failures=1)",
+      "attempt1_latency_s": 71.395,
+      "attempt1_eval_s": 0.065,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 100.988,
+      "attempt2_eval_s": 0.072,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** Los handlers devueltos por `make_handlers` no devuelven la longitud correcta de la configuración efectiva de cada llamada. Esto se debe a que el closure `lambda` captura una referencia a `base_config` que se actualiza en cada iteración del bucle, lo que resulta en un comportamiento inesperado.",
+        "**CONTRATO:** Cada handler debe capturar su propio `name` en el momento de la iteración y devolver la cadena `\"{name}:{len_config}\"` correspondiente a ese elemento y a la longitud de la configuración efectiva de esa llamada.",
+        "**CORRECCIÓN:** Para resolver este problema, se debe crear una copia local de `base_config` en cada iteración del bucle. Esto asegura que cada handler tenga su propio estado independiente y que la longitud de la configuración efectiva se calcule correctamente para cada llamada."
+      ],
+      "total_latency_s": 172.383,
+      "retrieved_examples": [
+        {
+          "task_id": "train_28_debug_rate_limited_batch_retry",
+          "score": 34.048,
+          "category": "debugging"
+        },
+        {
+          "task_id": "train_15_ip_network_cidr_validator",
+          "score": 16.2174,
+          "category": "edge_cases"
+        }
+      ]
+    },
+    {
+      "task_id": "task_05_debug_binary_search_edge_cases",
+      "title": "Depuración de Búsqueda Binaria con Casos Límite",
+      "category": "debugging",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": true,
+      "repaired": false,
+      "final_passed": true,
+      "attempts_used": 1,
+      "is_valid_run": true,
+      "error_category": null,
+      "initial_error": "",
+      "attempt1_latency_s": 70.58,
+      "attempt1_eval_s": 0.068,
+      "attempt1_status": "PASS",
+      "attempt2_latency_s": 0.0,
+      "attempt2_eval_s": 0.0,
+      "attempt2_status": null,
+      "attempt2_diagnostic_lines": [],
+      "total_latency_s": 70.58,
+      "retrieved_examples": [
+        {
+          "task_id": "train_08_debug_binary_search_rotated",
+          "score": 121.8576,
+          "category": "debugging"
+        },
+        {
+          "task_id": "train_26_debug_flatten_tree_preorder",
+          "score": 48.2234,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_06_edge_case_interval_merging",
+      "title": "Fusión de Intervalos de Tiempo con Casos Límite Críticos",
+      "category": "edge_cases_reasoning",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": true,
+      "final_passed": true,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": null,
+      "initial_error": "test_empty_input (__main__.TestMergeIntervals.test_empty_input) ... ok\ntest_invalid_interval_raises_value_error (__main__.TestMergeIntervals.test_invalid_interval_raises_value_error) ... FAIL\ntest_point_intervals (__main__.TestMergeIntervals.test_point_intervals) ... ok\ntest_standard_merge (__main__.TestMergeIntervals.test_standard_merge) ... ok\ntest_touching_borders_merged (__main__.TestMergeIntervals.test_touching_borders_merged) ... ok\ntest_unsorted_input (__main__.TestMergeIntervals.test_unsorted_input) ... ok\n\n======================================================================\nFAIL: test_invalid_interval_raises_value_error (__main__.TestMergeIntervals.test_invalid_interval_raises_value_error)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_f5wj9lsn/test_runner.py\", line 46, in test_invalid_interval_raises_value_error\n    with self.assertRaises(ValueError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nFAILED (failures=1)",
+      "final_error": "",
+      "attempt1_latency_s": 65.595,
+      "attempt1_eval_s": 0.07,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 82.685,
+      "attempt2_eval_s": 0.079,
+      "attempt2_status": "PASS",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** `ValueError` not raised",
+        "**CONTRATO:** `merge_intervals` should raise `ValueError` if any interval has `inicio > fin`.",
+        "**CORRECCIÓN:** Add a check to raise `ValueError` if any interval has `inicio > fin`.",
+        "- **ERROR:** The test `test_invalid_interval_raises_value_error` failed because `ValueError` was not raised when an invalid interval was provided.",
+        "- **CONTRATO:** The function `merge_intervals` should raise `ValueError` if any interval has `inicio > fin`.",
+        "- **CORRECCIÓN:** Added a check to raise `ValueError` if any interval has `inicio > fin`."
+      ],
+      "total_latency_s": 148.28,
+      "retrieved_examples": [
+        {
+          "task_id": "train_33_interval_tree_point_query",
+          "score": 60.9678,
+          "category": "data_structures"
+        }
+      ]
+    },
+    {
+      "task_id": "task_07_edge_case_robust_semver_comparator",
+      "title": "Comparador SemVer 2.0 con Precedencia de Pre-Release",
+      "category": "edge_cases_reasoning",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "test_build_metadata_ignored (__main__.TestSemVer.test_build_metadata_ignored) ... FAIL\ntest_invalid_formats (__main__.TestSemVer.test_invalid_formats) ... ok\ntest_numeric_comparison (__main__.TestSemVer.test_numeric_comparison) ... ok\ntest_prerelease_identifiers (__main__.TestSemVer.test_prerelease_identifiers) ... FAIL\ntest_prerelease_vs_release (__main__.TestSemVer.test_prerelease_vs_release) ... FAIL\n\n======================================================================\nFAIL: test_build_metadata_ignored (__main__.TestSemVer.test_build_metadata_ignored)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_rx139hbu/test_runner.py\", line 50, in test_build_metadata_ignored\n    self.assertEqual(compare_semver('1.0.0+exp.sha.5114f85', '1.0.0+exp.sha.9999999'), 0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: -1 != 0\n\n======================================================================\nFAIL: test_prerelease_identifiers (__main__.TestSemVer.test_prerelease_identifiers)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_rx139hbu/test_runner.py\", line 47, in test_prerelease_identifiers\n    self.assertEqual(compare_semver('1.0.0-beta.11', '1.0.0-beta.2'), 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: -1 != 1\n\n======================================================================\nFAIL: test_prerelease_vs_release (__main__.TestSemVer.test_prerelease_vs_release)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_rx139hbu/test_runner.py\", line 40, in test_prerelease_vs_release\n    self.assertEqual(compare_semver('1.0.0', '1.0.0-alpha'), 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: -1 != 1\n\n----------------------------------------------------------------------\nRan 5 tests in 0.002s\n\nFAILED (failures=3)",
+      "final_error": "test_build_metadata_ignored (__main__.TestSemVer.test_build_metadata_ignored) ... ok\ntest_invalid_formats (__main__.TestSemVer.test_invalid_formats) ... ok\ntest_numeric_comparison (__main__.TestSemVer.test_numeric_comparison) ... ok\ntest_prerelease_identifiers (__main__.TestSemVer.test_prerelease_identifiers) ... FAIL\ntest_prerelease_vs_release (__main__.TestSemVer.test_prerelease_vs_release) ... FAIL\n\n======================================================================\nFAIL: test_prerelease_identifiers (__main__.TestSemVer.test_prerelease_identifiers)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_o0czsq9n/test_runner.py\", line 51, in test_prerelease_identifiers\n    self.assertEqual(compare_semver('1.0.0-beta.11', '1.0.0-beta.2'), 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: -1 != 1\n\n======================================================================\nFAIL: test_prerelease_vs_release (__main__.TestSemVer.test_prerelease_vs_release)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_o0czsq9n/test_runner.py\", line 44, in test_prerelease_vs_release\n    self.assertEqual(compare_semver('1.0.0', '1.0.0-alpha'), 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: -1 != 1\n\n----------------------------------------------------------------------\nRan 5 tests in 0.002s\n\nFAILED (failures=2)",
+      "attempt1_latency_s": 85.918,
+      "attempt1_eval_s": 0.067,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 130.066,
+      "attempt2_eval_s": 0.075,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** Los tests `test_build_metadata_ignored` y `test_prerelease_identifiers` fallaron debido a que el comparador no considera correctamente los metadatos de compilación (`+BUILD`) y los identificadores de pre-release (`-PRERELEASE`).",
+        "**CONTRATO:** La función `compare_semver` debe ignorar los metadatos de compilación (`+BUILD`) y comparar los identificadores de pre-release (`-PRERELEASE`) correctamente.",
+        "**CORRECCIÓN:** La función debe ignorar los metadatos de compilación al comparar las versiones. Además, debe comparar los identificadores de pre-release de manera correcta."
+      ],
+      "total_latency_s": 215.984,
+      "retrieved_examples": [
+        {
+          "task_id": "train_34_semver_expression_matcher",
+          "score": 43.9377,
+          "category": "edge_cases"
+        }
+      ]
+    },
+    {
+      "task_id": "task_08_refactor_cyclomatic_complexity",
+      "title": "Refactorización de Complejidad Ciclomática en Cálculo de Precios",
+      "category": "refactoring",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount) ... FAIL\ntest_invalid_cases (__main__.TestRefactoredPricing.test_invalid_cases) ... FAIL\ntest_max_discount_cap (__main__.TestRefactoredPricing.test_max_discount_cap) ... FAIL\ntest_premium_and_vip_tiers (__main__.TestRefactoredPricing.test_premium_and_vip_tiers) ... ok\ntest_standard_client (__main__.TestRefactoredPricing.test_standard_client) ... FAIL\n\n======================================================================\nFAIL: test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_99gvy3l_/test_runner.py\", line 57, in test_bulk_discount\n    self.assertEqual(calculate_order_price(order), 65.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 70.0 != 65.0\n\n======================================================================\nFAIL: test_invalid_cases (__main__.TestRefactoredPricing.test_invalid_cases)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_99gvy3l_/test_runner.py\", line 68, in test_invalid_cases\n    with self.assertRaises(ValueError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n======================================================================\nFAIL: test_max_discount_cap (__main__.TestRefactoredPricing.test_max_discount_cap)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_99gvy3l_/test_runner.py\", line 63, in test_max_discount_cap\n    self.assertEqual(calculate_order_price(order), 130.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 140.0 != 130.0\n\n======================================================================\nFAIL: test_standard_client (__main__.TestRefactoredPricing.test_standard_client)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_99gvy3l_/test_runner.py\", line 47, in test_standard_client\n    self.assertEqual(calculate_order_price({'subtotal': 100.0, 'client_tier': 'standard'}), 100.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 95.0 != 100.0\n\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nFAILED (failures=4)",
+      "final_error": "test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount) ... FAIL\ntest_invalid_cases (__main__.TestRefactoredPricing.test_invalid_cases) ... FAIL\ntest_max_discount_cap (__main__.TestRefactoredPricing.test_max_discount_cap) ... FAIL\ntest_premium_and_vip_tiers (__main__.TestRefactoredPricing.test_premium_and_vip_tiers) ... ok\ntest_standard_client (__main__.TestRefactoredPricing.test_standard_client) ... FAIL\n\n======================================================================\nFAIL: test_bulk_discount (__main__.TestRefactoredPricing.test_bulk_discount)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_mbdwnhfc/test_runner.py\", line 57, in test_bulk_discount\n    self.assertEqual(calculate_order_price(order), 65.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 70.0 != 65.0\n\n======================================================================\nFAIL: test_invalid_cases (__main__.TestRefactoredPricing.test_invalid_cases)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_mbdwnhfc/test_runner.py\", line 68, in test_invalid_cases\n    with self.assertRaises(ValueError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n======================================================================\nFAIL: test_max_discount_cap (__main__.TestRefactoredPricing.test_max_discount_cap)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_mbdwnhfc/test_runner.py\", line 63, in test_max_discount_cap\n    self.assertEqual(calculate_order_price(order), 130.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 140.0 != 130.0\n\n======================================================================\nFAIL: test_standard_client (__main__.TestRefactoredPricing.test_standard_client)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_mbdwnhfc/test_runner.py\", line 47, in test_standard_client\n    self.assertEqual(calculate_order_price({'subtotal': 100.0, 'client_tier': 'standard'}), 100.0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 95.0 != 100.0\n\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nFAILED (failures=4)",
+      "attempt1_latency_s": 130.458,
+      "attempt1_eval_s": 0.077,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 135.302,
+      "attempt2_eval_s": 0.075,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** [Las pruebas fallaron debido a que el descuento máximo acumulado no se aplicaba correctamente en algunos casos.]",
+        "**CONTRATO:** [El descuento máximo acumulado no debe exceder el 50% (0.50) y el resultado debe estar redondeado a 2 decimales.]",
+        "**CORRECCIÓN:** [Aseguramos que el descuento máximo se aplique correctamente y redondeamos el resultado al final.]"
+      ],
+      "total_latency_s": 265.76,
+      "retrieved_examples": [
+        {
+          "task_id": "train_20_refactor_polymorphic_discount_engine",
+          "score": 367.0197,
+          "category": "refactoring"
+        },
+        {
+          "task_id": "train_16_levenshtein_distance_matrix",
+          "score": 7.2913,
+          "category": "edge_cases"
+        }
+      ]
+    },
+    {
+      "task_id": "task_09_refactor_async_parallel_batcher",
+      "title": "Transformación Concurrente con Semáforo y Tolerancia a Fallos",
+      "category": "refactoring",
+      "evaluation_mode": "python_test_execution",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL\ntest_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok\n\n======================================================================\nFAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_tcd8zrzx/test_runner.py\", line 64, in test_concurrency_and_ordering\n    asyncio.run(main())\n    ~~~~~~~~~~~^^^^^^^^\n  File \"/usr/lib/python3.13/asyncio/runners.py\", line 195, in run\n    return runner.run(main)\n           ~~~~~~~~~~^^^^^^\n  File \"/usr/lib/python3.13/asyncio/runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/usr/lib/python3.13/asyncio/base_events.py\", line 725, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\n  File \"/tmp/aura_sandbox_tcd8zrzx/test_runner.py\", line 56, in main\n    self.assertLessEqual(max_simultaneous, 2, 'Excedio el limite de concurrencia maxima')\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 5 not less than or equal to 2 : Excedio el limite de concurrencia maxima\n\n----------------------------------------------------------------------\nRan 2 tests in 0.105s\n\nFAILED (failures=1)",
+      "final_error": "test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering) ... FAIL\ntest_timeout_handling (__main__.TestAsyncBatcher.test_timeout_handling) ... ok\n\n======================================================================\nFAIL: test_concurrency_and_ordering (__main__.TestAsyncBatcher.test_concurrency_and_ordering)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_n4c0x_2g/test_runner.py\", line 65, in test_concurrency_and_ordering\n    asyncio.run(main())\n    ~~~~~~~~~~~^^^^^^^^\n  File \"/usr/lib/python3.13/asyncio/runners.py\", line 195, in run\n    return runner.run(main)\n           ~~~~~~~~~~^^^^^^\n  File \"/usr/lib/python3.13/asyncio/runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/usr/lib/python3.13/asyncio/base_events.py\", line 725, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\n  File \"/tmp/aura_sandbox_n4c0x_2g/test_runner.py\", line 57, in main\n    self.assertLessEqual(max_simultaneous, 2, 'Excedio el limite de concurrencia maxima')\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 5 not less than or equal to 2 : Excedio el limite de concurrencia maxima\n\n----------------------------------------------------------------------\nRan 2 tests in 0.104s\n\nFAILED (failures=1)",
+      "attempt1_latency_s": 97.661,
+      "attempt1_eval_s": 0.251,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 109.561,
+      "attempt2_eval_s": 0.272,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** El código no cumple con el requisito de que la lista devuelta mantenga el orden original de los `items`.",
+        "**CONTRATO:** La lista devuelta debe mantener exactamente el orden original de los `items`.",
+        "**CORRECCIÓN:** Para mantener el orden original, se debe usar una cola (queue) para almacenar los resultados en el orden en que se completan las tareas. Esto asegura que el resultado final se mantenga en el mismo orden que los elementos de entrada."
+      ],
+      "total_latency_s": 207.222,
+      "retrieved_examples": [
+        {
+          "task_id": "train_18_async_rate_limited_semaphore_worker",
+          "score": 87.1377,
+          "category": "concurrency"
+        },
+        {
+          "task_id": "train_25_bloom_filter_bitarray",
+          "score": 32.5644,
+          "category": "code_generation"
+        }
+      ]
+    },
+    {
+      "task_id": "task_10_test_creation_bank_account",
+      "title": "Generación de Suite de Pruebas Unitarias para BankAccount",
+      "category": "test_creation",
+      "evaluation_mode": "mutation_testing",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 2,
+      "is_valid_run": true,
+      "error_category": "FAIL",
+      "initial_error": "La suite de tests falló contra la implementación canónica: ..EF\n======================================================================\nERROR: test_transfer (__main__.TestBankAccount.test_transfer)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_iiibrqqy/test_runner.py\", line",
+      "final_error": "La suite de tests falló contra la implementación canónica: ..EF\n======================================================================\nERROR: test_transfer (__main__.TestBankAccount.test_transfer)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/aura_sandbox_idc275g2/test_runner.py\", line",
+      "attempt1_latency_s": 110.011,
+      "attempt1_eval_s": 0.07,
+      "attempt1_status": "FAIL",
+      "attempt2_latency_s": 106.06,
+      "attempt2_eval_s": 0.069,
+      "attempt2_status": "FAIL",
+      "attempt2_diagnostic_lines": [
+        "**ERROR:** `TypeError` en `test_transfer` debido a la falta de validación de la instancia de `BankAccount` en el método `transfer`.",
+        "**CONTRATO:** El método `transfer` debe validar que el argumento `target_account` sea una instancia de `BankAccount`.",
+        "**CORRECCIÓN:** Agregar una validación para asegurar que `target_account` es una instancia de `BankAccount`.",
+        "- **ERROR:** `TypeError` en `test_transfer` debido a la falta de validación de la instancia de `BankAccount` en el método `transfer`.",
+        "- **CONTRATO:** El método `transfer` debe validar que el argumento `target_account` sea una instancia de `BankAccount`.",
+        "- **CORRECCIÓN:** Agregar una validación para asegurar que `target_account` es una instancia de `BankAccount`."
+      ],
+      "total_latency_s": 216.071,
+      "retrieved_examples": [
+        {
+          "task_id": "train_29_debug_concurrent_counter_deadlock",
+          "score": 97.9568,
+          "category": "debugging"
+        },
+        {
+          "task_id": "train_08_debug_binary_search_rotated",
+          "score": 16.7326,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_11_tech_explanation_gil_and_multiprocessing",
+      "title": "Explicación Técnica Rigurosa: GIL, Multithreading y Multiprocessing en CPython",
+      "category": "technical_explanation",
+      "evaluation_mode": "semantic_rubric_check",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 1,
+      "is_valid_run": false,
+      "error_category": "SERVER_ERROR",
+      "initial_error": "timed out",
+      "attempt1_latency_s": 179.989,
+      "attempt1_eval_s": 0.0,
+      "attempt1_status": "SERVER_ERROR",
+      "attempt2_latency_s": 0.0,
+      "attempt2_eval_s": 0.0,
+      "attempt2_status": null,
+      "attempt2_diagnostic_lines": [],
+      "total_latency_s": 179.989,
+      "retrieved_examples": [
+        {
+          "task_id": "train_38_thread_pool_barrier_synchronizer",
+          "score": 11.0886,
+          "category": "concurrency"
+        },
+        {
+          "task_id": "train_26_debug_flatten_tree_preorder",
+          "score": 6.3226,
+          "category": "debugging"
+        }
+      ]
+    },
+    {
+      "task_id": "task_12_tech_explanation_sql_injection_defense",
+      "title": "Análisis Técnico y Mitigación Inmune contra SQL Injection",
+      "category": "technical_explanation",
+      "evaluation_mode": "semantic_rubric_check",
+      "pass_at_1": false,
+      "repaired": false,
+      "final_passed": false,
+      "attempts_used": 1,
+      "is_valid_run": false,
+      "error_category": "SERVER_ERROR",
+      "initial_error": "timed out",
+      "attempt1_latency_s": 179.99,
+      "attempt1_eval_s": 0.0,
+      "attempt1_status": "SERVER_ERROR",
+      "attempt2_latency_s": 0.0,
+      "attempt2_eval_s": 0.0,
+      "attempt2_status": null,
+      "attempt2_diagnostic_lines": [],
+      "total_latency_s": 179.99,
+      "retrieved_examples": [
+        {
+          "task_id": "train_29_debug_concurrent_counter_deadlock",
+          "score": 18.1774,
+          "category": "debugging"
+        },
+        {
+          "task_id": "train_04_matrix_rotation_90deg",
+          "score": 2.7571,
+          "category": "code_generation"
+        }
+      ]
+    }
+  ]
+}

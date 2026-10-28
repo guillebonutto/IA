@@ -9,6 +9,7 @@ import sys
 import json
 import re
 import mimetypes
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 import urllib.parse
@@ -79,6 +80,14 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
 
+    def _chat_metrics(self, request_started):
+        metrics = agent.get_last_request_metrics() or {}
+        metrics["api_request_seconds"] = round(
+            time.perf_counter() - request_started,
+            4,
+        )
+        return metrics
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -111,7 +120,7 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
 
             response = {
                 "server_online": server_online,
-                "model": "Meta Llama 3.1 8B Instruct (Local)",
+                "model": "Modelo local activo (llama.cpp)",
                 "system": stats,
                 "memory": mem_stats,
                 "debate": debate_status,
@@ -180,6 +189,7 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
             self._send_bytes(b"404 Not Found", "text/plain", 404)
 
     def do_POST(self):
+        request_started = time.perf_counter()
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
@@ -245,8 +255,9 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
 
             # Si el usuario eligió debate o si está en auto con claves configuradas
             debate_ready = debate_engine.is_configured()["debate_ready"] or debate_engine.is_configured()["groq_ready"] or debate_engine.is_configured()["gemini_ready"]
-            
-            if mode == "debate" and not debate_ready:
+            simple_greeting = agent.is_simple_greeting(user_message)
+
+            if mode == "debate" and not simple_greeting and not debate_ready:
                 resp = {
                     "success": False,
                     "need_keys": True,
@@ -255,7 +266,9 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(resp, 200)
                 return
 
-            use_debate = (mode == "debate") or (mode == "auto" and debate_ready)
+            use_debate = not simple_greeting and (
+                mode == "debate" or (mode == "auto" and debate_ready)
+            )
 
             if use_debate and debate_ready:
                 try:
@@ -281,7 +294,8 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                         "response": debate_res.get("final_response", ""),
                         "debate_rounds": debate_res.get("debate_rounds", []),
                         "mode_used": "debate_cloud",
-                        "tool_events": combined_events
+                        "tool_events": combined_events,
+                        "metrics": self._chat_metrics(request_started),
                     }
                     self._send_json(resp, 200)
                 except Exception as e:
@@ -300,6 +314,7 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                             "response": response_text,
                             "mode_used": "local_agent_fallback",
                             "tool_events": events,
+                            "metrics": self._chat_metrics(request_started),
                             "warning": f"Nube no disponible ({str(e)}). Se utilizó el agente local."
                         }
                         self._send_json(resp, 200)
@@ -329,7 +344,8 @@ class AgentRequestHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "response": response_text,
                     "mode_used": "local_agent",
-                    "tool_events": events
+                    "tool_events": events,
+                    "metrics": self._chat_metrics(request_started),
                 }
                 self._send_json(resp, 200)
             except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):

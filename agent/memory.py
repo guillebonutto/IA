@@ -9,9 +9,12 @@ import os
 import sqlite3
 import re
 import json
+import logging
 from typing import List, Dict, Optional
 from datetime import datetime
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 class LocalMemory:
     def __init__(self, db_path=None, base_dir=None):
@@ -168,6 +171,7 @@ class LocalMemory:
             conn.close()
             return results
         except Exception:
+            logger.exception("No se pudo buscar en la base de conocimiento local.")
             conn.close()
             return []
 
