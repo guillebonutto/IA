@@ -1,0 +1,52 @@
+{
+  "batch": "confirmed_candidates_batch_02",
+  "version": 1,
+  "created_at": "2026-10-31",
+  "domain": "Python / Algoritmos / Estructuras de datos / Debugging",
+  "source": "user_provided_candidate_batch",
+  "initial_status": "REVIEW",
+  "record_type": "candidate_prompt_only",
+  "teacher_responses_generated": false,
+  "training_or_inference_run": false,
+  "record_count": 20,
+  "task_ids": [
+    "train_41",
+    "train_42",
+    "train_43",
+    "train_44",
+    "train_45",
+    "train_46",
+    "train_47",
+    "train_48",
+    "train_49",
+    "train_50",
+    "train_51",
+    "train_52",
+    "train_53",
+    "train_54",
+    "train_55",
+    "train_56",
+    "train_57",
+    "train_58",
+    "train_59",
+    "train_60"
+  ],
+  "category_counts": {
+    "Estructuras de datos": 5,
+    "Algoritmos": 7,
+    "Debugging y robustez": 4,
+    "Refactorización y diseño": 4
+  },
+  "validation_criteria": [
+    "Respuesta de referencia: implementación completa y explicaciones necesarias.",
+    "Pruebas funcionales: casos normales, límites y entradas inválidas.",
+    "Pruebas de regresión: comprobar que los casos ya resueltos no se rompan.",
+    "Revisión técnica: complejidad, contratos, excepciones y legibilidad.",
+    "Clasificación: TRAIN, REVIEW o REJECT. Solo los que superen la validación pasan a confirmed."
+  ],
+  "sha256": "5cc8d2b88190784a9aeac20f5a19d6f9ae77fc29d2f93d00d189f4fbd9763278",
+  "notes": [
+    "El archivo JSONL contiene prompts candidatos solamente, no soluciones ni respuestas del teacher.",
+    "Los 16 registros confirmados y sus archivos no fueron modificados."
+  ]
+}
